@@ -691,6 +691,7 @@
                 
             #case 3,
                 #Draw all possible weapon groups-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                #this is questionable.
                 for(TurretIndex = 1, GlobalVariables["TurretGroups", table]:count()) {
                     for(GroupIndex = 1, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table]:count()) {
                         
