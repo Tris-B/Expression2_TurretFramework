@@ -85,8 +85,8 @@
     
     function addCamPos(Index:number, Parent:entity, Pos:vector, Dist:number, Vig:number) {
         
-        #local Cameras = 
-        local CamGroupCount = GlobalVariables["TurretGroups", table][Index, table]["Cameras", table]:count()
+        local Cameras = GlobalVariables["TurretGroups", table][Index, table]["Cameras", table]
+        local CamGroupCount = Cameras:count()
         local CamHolo = entity()
         local HoloAmount = holoAmount()
         
@@ -95,28 +95,29 @@
                   holoParent(HoloAmount, Parent)
         
         CamGroupCount++
-        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table]:insertTable(CamGroupCount, table())
-        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table][CamGroupCount, table]["Parent", entity]    = CamHolo
-        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table][CamGroupCount, table]["Distance", number]  = Dist
-        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table][CamGroupCount, table]["Vignette", number]  = Vig
+        Cameras:insertTable(CamGroupCount, table())
+        Cameras[CamGroupCount, table]["Parent", entity]    = CamHolo
+        Cameras[CamGroupCount, table]["Distance", number]  = Dist
+        Cameras[CamGroupCount, table]["Vignette", number]  = Vig
 
     }
     
     function addWeaponGroup(Index:number, Name:string, Primary:array, Secondary:array) {
         
-        local WepGroupCount = GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table]:count()
+        local WepGroup = GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table]
+        local WepGroupCount = WepGroup:count()
         local Concat = array()
         #local N = EGP:egpNumObjects()
         
         WepGroupCount++
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table]:insertTable(WepGroupCount, table())
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["AmmoGroups", table] = table()
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["ListsHudElements", array] = array()
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["AllAmmoCrates", table] = table()
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["AmmoGroupCount", number] = 0
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["ActiveAmmoGroup", number] = 1
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["Primary", array] = Primary
-        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["Secondary", array] = Secondary
+        WepGroup:insertTable(WepGroupCount, table())
+        WepGroup[WepGroupCount, table]["AmmoGroups", table] = table()
+        WepGroup[WepGroupCount, table]["ListsHudElements", array] = array()
+        WepGroup[WepGroupCount, table]["AllAmmoCrates", table] = table()
+        WepGroup[WepGroupCount, table]["AmmoGroupCount", number] = 0
+        WepGroup[WepGroupCount, table]["ActiveAmmoGroup", number] = 1
+        WepGroup[WepGroupCount, table]["Primary", array] = Primary
+        WepGroup[WepGroupCount, table]["Secondary", array] = Secondary
         
         #Cycle through primary guns
         for(I = 1, Primary:count()) {
@@ -161,42 +162,45 @@
     }
 
     function setActiveAmmoGroup(TurretGroup_Index, WepGroup_Index, AmmoGroup_Index) {
-       
-        local AllCrates_Keys = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AllAmmoCrates", table]:keys()
+        
+        local AllCrates = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AllAmmoCrates", table]
+        local AllCrates_Keys = AllCrates:keys()
+        local AmmoGroup = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]
         
         for(I = 1, AllCrates_Keys:count()) {
-            GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AllAmmoCrates", table][AllCrates_Keys[I, number], entity]:acfActive(0)
+            AllCrates[AllCrates_Keys[I, number], entity]:acfActive(0)
         }        
-        for(I = 1, GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array]:count()) {
-            GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array][I, entity]:acfActive(1)
+        for(I = 1, AmmoGroup["Crates", array]:count()) {
+            AmmoGroup["Crates", array][I, entity]:acfActive(1)
         }
-        EGP:egpSetText(HUDelements["AmmoGroupName", number], GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Name", string])
-        EGP:egpSetText(HUDelements["AmmoTypes", number], GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Types", string])
+        EGP:egpSetText(HUDelements["AmmoGroupName", number], AmmoGroup["Name", string])
+        EGP:egpSetText(HUDelements["AmmoTypes", number], AmmoGroup["Types", string])
         
     }
     
     function addAmmoGroup(TurretGroup_Index:number, WepGroup_Index:number, Name:string, Types:array) {
         
-        local AmmoGroup_Index = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroupCount", number]
-        local AllCrates       = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AllAmmoCrates", table]
+        local WepGroup = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]
+        local AmmoGroup_Index = WepGroup["AmmoGroupCount", number]
+        local AllCrates       = WepGroup["AllAmmoCrates", table]
         local AllTypes        = Types:concat()
         local AllCrateKeys    = AllCrates:keys()
                                 AmmoGroup_Index++
         
-        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table]:insertTable(AmmoGroup_Index, table())
-        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array] = array()    
+        WepGroup["AmmoGroups", table]:insertTable(AmmoGroup_Index, table())
+        WepGroup["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array] = array()    
         
-        #local AmmoGroup = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]
+        #local AmmoGroup = WepGroup["AmmoGroups", table][AmmoGroup_Index, table]
         for (I = 1, AllCrateKeys:count()) {
             if(AllTypes:find(AllCrates[AllCrateKeys[I, number], entity]:acfNameShort())) {
-                GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array]:pushEntity(AllCrates[AllCrateKeys[I, number], entity])
+                WepGroup["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array]:pushEntity(AllCrates[AllCrateKeys[I, number], entity])
             }
         }
         if(AmmoGroup_Index == 1) {setActiveAmmoGroup(TurretGroup_Index, WepGroup_Index, 1)}
         
-        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroupCount", number] = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroupCount", number] + 1
-        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Types", string] = Types:concat("/")
-        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Name", string] = Name
+        WepGroup["AmmoGroupCount", number] = WepGroup["AmmoGroupCount", number] + 1
+        WepGroup["AmmoGroups", table][AmmoGroup_Index, table]["Types", string] = Types:concat("/")
+        WepGroup["AmmoGroups", table][AmmoGroup_Index, table]["Name", string] = Name
 
     }
     
@@ -245,10 +249,10 @@
     }
     
     function wirelink:setCamVars(GVars:table) {
-            This["Position", vector] = GVars["TurretGroups", table][GVars["ActiveTurretGroup", number], table]["Cameras", table][GVars["ActiveCamIndex", number], table]["Parent", entity]:pos()
-            This["Parent", entity] = GVars["TurretGroups", table][GVars["ActiveTurretGroup", number], table]["Cameras", table][GVars["ActiveCamIndex", number], table]["Parent", entity]
-            This["Distance", number] = GVars["TurretGroups", table][GVars["ActiveTurretGroup", number], table]["Cameras", table][GVars["ActiveCamIndex", number], table]["Distance", number]
-            
+        local ActiveCam = GVars["TurretGroups", table][GVars["ActiveTurretGroup", number], table]["Cameras", table][GVars["ActiveCamIndex", number], table]
+        This["Position", vector] = ActiveCam["Parent", entity]:pos()
+        This["Parent", entity] = ActiveCam["Parent", entity]
+        This["Distance", number] = ActiveCam["Distance", number]
     }
     
     function table:setPY_DesignatorAngles(HitPos:vector) {
@@ -332,40 +336,7 @@
             }
         return
     }
-    
-    function wirelink:initEGP_Radar(Radar:wirelink) {
-        
-    }
-    
-    function wirelink:egpUpdateRadarSigs(Radar:wirelink) {
-        
-    }
-    
-    function wirelink:egpUpdateRadarScanlines() {
-        
-        #This shits way too expensive, unused
-        #HUDelements["RadarScanlines", table]["EGP_Indexes", array]
-        
-        local EGPIndexes = HUDelements["RadarScanlines", table]["EGP_Indexes", array]
-        local ScanlineCount = EGPIndexes:count()
-        local Alphas = HUDelements["RadarScanlines", table]["Alphas", array]
-        local Acc = HUDelements["RadarScanlines", table]["Accumulator", number]
-        HUDelements["RadarScanlines", table]["Alphas", array][HUDelements["RadarScanlines", table]["Active_Index", number], number] = 90
-        HUDelements["RadarScanlines", table]["Active_Index", number] = HUDelements["RadarScanlines", table]["Active_Index", number] + Acc
-        if(HUDelements["RadarScanlines", table]["Active_Index", number] == ScanlineCount | HUDelements["RadarScanlines", table]["Active_Index", number] == 1) 
-        {HUDelements["RadarScanlines", table]["Accumulator", number] = -Acc}
-        
-        for(I = 1, ScanlineCount) {
-            Alphas[I, number] = clamp(Alphas[I, number] - 7.5, 0, 90)
-            This:egpAlpha(EGPIndexes[I, number], Alphas[I, number])
-        }
-        #HUDelements["RadarScanlines", table]["Active_Index", number] = HUDelements["RadarScanlines", table]["Active_Index", number] + Acc
-        #This:egpAlpha(HUDelements["RadarScanlines", table]["EGP_Indexes", array][HUDelements["RadarScanlines", table]["Active_Index", number], number], 90)
-        #HUDelements["RadarScanlines", table]["Alphas", array][HUDelements["RadarScanlines", table]["Active_Index", number], number] = 90
-        #if(HUDelements["RadarScanlines", table]["Active_Index", number] == ScanlineCount | HUDelements["RadarScanlines", table]["Active_Index", number] == 1) 
-        #{HUDelements["RadarScanlines", table]["Accumulator", number] = -Acc}
-    }
-    
+     
     function wirelink:initEGP(Step) {
     
         INIT_START = systime()
