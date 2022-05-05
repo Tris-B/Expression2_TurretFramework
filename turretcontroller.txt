@@ -24,8 +24,8 @@ if(first() | (first() & dupefinished()) | duped()) {
 
     INIT_START = systime()
 
-    #include "turret_controller/turretlib"
-    #include "turret_controller/doc"
+    #include "Expression2_TurretFramework/turretlib"
+    #include "Expression2_TurretFramework/doc"
 
     function table createGlobalVars(Base:entity) {
 
