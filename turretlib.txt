@@ -1,0 +1,1083 @@
+@name TurretLib [4.4.2]
+@inputs [Pod Cam EGP Radar]:wirelink
+@outputs Rate
+@persist [GlobalVariables Turrets Keybinds AmmoTable HUDelements Timer State]:table [HUDcolors]:array SC:vector2
+    
+#[   
+    CREATED & MAINTAINED BY: Tris#7689 on Discord
+    REFACTORED FROM: An E2 made by worldpeace/UberDude
+   
+    Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
+]#
+    
+    function initTurret(GEntity:entity, TEntity:entity, TBase:entity, TAxis_Offset:vector, GAxis_Offset:vector, AngMax:angle, AngMin:angle, Rate:number, Smoothing:number, TAxis_AngOffset:angle) {
+        
+        #local TurretCount   =   GlobalVariables["TurretCount", number]
+        local HoloCount     =   holoAmount()
+        local TableOut      =   table()
+                                #TurretCount++
+                                HoloCount++
+                                
+        local TAnchorHolo   =   holoCreate(HoloCount+1, TEntity:pos() + TAxis_Offset, vec(2, 2, 0.01) * GlobalVariables["DEBUG", number], TAxis_AngOffset + TEntity:toWorld(ang()), vec(0, 205, 0))
+        local TParent       =   holoCreate(HoloCount, TAnchorHolo:pos(), vec(0.05, 0.05, 12) * GlobalVariables["DEBUG", number], TAnchorHolo:toWorld(ang()), vec(205, 0, 0))
+                                holoParent(HoloCount, TAnchorHolo)
+                                holoParent(HoloCount+1, TBase)
+                                #TableOut["TAnchorHolo", entity] = TAnchorHolo
+                                #TableOut["TParent", entity] = TParent
+                                TEntity["TAnchorHolo", entity] = TAnchorHolo
+                                TEntity["TParent", entity] = TParent
+                                HoloCount += 2
+        
+        local GAnchorHolo   =   holoCreate(HoloCount+1, GEntity:massCenter() + GAxis_Offset, vec(2, 0.01, 2) * GlobalVariables["DEBUG", number], TAnchorHolo:toWorld(ang()), vec(0, 205, 0))
+        local GParent       =   holoCreate(HoloCount, GAnchorHolo:pos(), vec(0.05, 12, 0.05) * GlobalVariables["DEBUG", number], TAnchorHolo:toWorld(ang()), vec(0, 0, 205))
+                                holoParent(HoloCount, GAnchorHolo)
+                                holoParent(HoloCount+1, TParent)
+                                #TableOut["GAnchorHolo", entity] = GAnchorHolo
+                                #TableOut["GParent", entity] = GParent
+                                TEntity["GAnchorHolo", entity] = GAnchorHolo
+                                TEntity["GParent", entity] = GParent
+                                HoloCount += 2
+
+        local AimposHolo    =   holoCreate(HoloCount, vec(), vec(0.5) * GlobalVariables["DEBUG", number], GEntity:toWorld(ang()), vec(0))
+                                holoParent(HoloCount, GEntity)
+                                TEntity["AimposHolo", entity] = AimposHolo
+                                HoloCount++
+                                
+                                TEntity["TBase", entity] = TBase
+                                TEntity["TChild", entity] = TEntity
+                                TEntity["GChild", entity] = GEntity
+                                #TEntity["CoaxGun", entity] = CoaxEntity
+                                TEntity["Max", angle] = AngMax
+                                TEntity["Min", angle] = AngMin
+                                TEntity["Rate", number] = Rate * (GlobalVariables["TickInterval", number] / 1000)
+                                TEntity["Smoothing", number] = Smoothing
+                                TEntity["TrackerID", number]  = 0
+                                #TEntity["TGroupIndex", number] = TGroupIndex
+                                
+                                #GlobalVariables["TurretCount", number] = TurretCount
+                                GlobalVariables["AllTurrets", array]:pushEntity(TEntity)
+        
+        
+    }
+    
+    function initTurretGroup(Index:number, Name:string, TGroup:array) {
+        
+        #local TableOut = table()
+        
+        #GlobalVariables["TurretGroups", table][Index, table]["index", number] = Index
+        
+        GlobalVariables["TurretGroups", table]:insertTable(Index, table())
+        GlobalVariables["TurretGroups", table][Index, table]["Name", string] = Name
+        GlobalVariables["TurretGroups", table][Index, table]["Turrets", array] = TGroup
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table] = table()
+        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table] = table()
+        GlobalVariables["TurretGroups", table][Index, table]["AmmoGroups", table] = table()
+        GlobalVariables["TurretGroups", table][Index, table]["AllAmmoCrates", table] = table()
+        
+        #return TableOut
+        
+    }
+    
+    function setDesignator(Index:number, Ent:entity) {
+        GlobalVariables["TurretGroups", table][Index, table]["Designator", entity] = Ent
+        GlobalVariables["TurretGroups", table][Index, table]["DesignatorWirelink", wirelink] = Ent:wirelink()
+    }
+    
+    function addCamPos(Index:number, Parent:entity, Pos:vector, Dist:number, Vig:number) {
+        
+        #local Cameras = 
+        local CamGroupCount = GlobalVariables["TurretGroups", table][Index, table]["Cameras", table]:count()
+        local CamHolo = entity()
+        local HoloAmount = holoAmount()
+        
+        HoloAmount++
+        CamHolo = holoCreate(HoloAmount, Parent:pos() + Pos, vec(0.3) * GlobalVariables["DEBUG", number], Parent:toWorld(ang()), vec(205, 205, 0))
+                  holoParent(HoloAmount, Parent)
+        
+        CamGroupCount++
+        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table]:insertTable(CamGroupCount, table())
+        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table][CamGroupCount, table]["Parent", entity]    = CamHolo
+        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table][CamGroupCount, table]["Distance", number]  = Dist
+        GlobalVariables["TurretGroups", table][Index, table]["Cameras", table][CamGroupCount, table]["Vignette", number]  = Vig
+
+    }
+    
+    function addWeaponGroup(Index:number, Name:string, Primary:array, Secondary:array) {
+        
+        local WepGroupCount = GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table]:count()
+        local Concat = array()
+        #local N = EGP:egpNumObjects()
+        
+        WepGroupCount++
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table]:insertTable(WepGroupCount, table())
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["AmmoGroups", table] = table()
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["ListsHudElements", array] = array()
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["AllAmmoCrates", table] = table()
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["AmmoGroupCount", number] = 0
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["ActiveAmmoGroup", number] = 1
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["Primary", array] = Primary
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["Secondary", array] = Secondary
+        
+        #Cycle through primary guns
+        for(I = 1, Primary:count()) {
+            #Add wirelink to gun
+            Primary[I, entity]["Wirelink", wirelink] = Primary[I, entity]:wirelink()
+            #Get all acf links and add to end of Concat local array
+            Concat = Concat:add(Primary[I, entity]:acfLinks())
+            #If weapon is a launcher, add to launchers table
+            if(Primary[I, entity]:acfIsGun() == 0) {GlobalVariables["AllLaunchers", table][Primary[I, entity]:id(), entity] = Primary[I, entity]}
+        }
+        
+        #print(Concat[1, entity]:acfName())
+        
+        for(I = 1, Secondary:count()) {
+            Secondary[I, entity]["Wirelink", wirelink] = Secondary[I, entity]:wirelink()
+            if(Secondary[I, entity]:acfIsGun() == 0) {GlobalVariables["AllLaunchers", table][Secondary[I, entity]:id(), entity] = Secondary[I, entity]}
+        }
+        
+        for(I = 1, Concat:count()) {
+            GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["AllAmmoCrates", table][Concat[I, entity]:id(), entity] = Concat[I, entity]
+        }
+            
+        GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table][WepGroupCount, table]["Name", string] = Name
+        
+    }
+    
+    function reloadAllEmptyLaunchers() {
+        
+        local Keys = GlobalVariables["AllLaunchers", table]:keys()
+        
+        for(I = 1, GlobalVariables["AllLaunchers", table]:count()) {
+            if(GlobalVariables["AllLaunchers", table][Keys[I, number], entity]["Wirelink", wirelink]["Shots Left", number] == 0) {
+                GlobalVariables["AllLaunchers", table][Keys[I, number], entity]["Wirelink", wirelink]["Reload", number] = 1
+            }
+        }
+    }
+
+    function array:fireWeaponGroup(Active:number) {
+        for(I = 1, This:count()) {
+            This[I, entity]["Wirelink", wirelink]["Fire", number] = Active
+        }
+    }
+
+    function setActiveAmmoGroup(TurretGroup_Index, WepGroup_Index, AmmoGroup_Index) {
+       
+        local AllCrates_Keys = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AllAmmoCrates", table]:keys()
+        
+        for(I = 1, AllCrates_Keys:count()) {
+            GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AllAmmoCrates", table][AllCrates_Keys[I, number], entity]:acfActive(0)
+        }        
+        for(I = 1, GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array]:count()) {
+            GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array][I, entity]:acfActive(1)
+        }
+        EGP:egpSetText(HUDelements["AmmoGroupName", number], GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Name", string])
+        EGP:egpSetText(HUDelements["AmmoTypes", number], GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Types", string])
+        
+    }
+    
+    function addAmmoGroup(TurretGroup_Index:number, WepGroup_Index:number, Name:string, Types:array) {
+        
+        local AmmoGroup_Index = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroupCount", number]
+        local AllCrates       = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AllAmmoCrates", table]
+        local AllTypes        = Types:concat()
+        local AllCrateKeys    = AllCrates:keys()
+                                AmmoGroup_Index++
+        
+        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table]:insertTable(AmmoGroup_Index, table())
+        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array] = array()    
+        
+        #local AmmoGroup = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]
+        for (I = 1, AllCrateKeys:count()) {
+            if(AllTypes:find(AllCrates[AllCrateKeys[I, number], entity]:acfNameShort())) {
+                GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Crates", array]:pushEntity(AllCrates[AllCrateKeys[I, number], entity])
+            }
+        }
+        if(AmmoGroup_Index == 1) {setActiveAmmoGroup(TurretGroup_Index, WepGroup_Index, 1)}
+        
+        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroupCount", number] = GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroupCount", number] + 1
+        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Types", string] = Types:concat("/")
+        GlobalVariables["TurretGroups", table][TurretGroup_Index, table]["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]["Name", string] = Name
+
+    }
+    
+    
+    function buildTurrets() {
+        for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
+            GlobalVariables["AllTurrets", array][I, entity]["TChild", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["TParent", entity])
+            GlobalVariables["AllTurrets", array][I, entity]["GChild", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["GParent", entity])
+            #GlobalVariables["AllTurrets", array][I, entity]["CoaxGun", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["GChild", entity])
+        }
+    }
+    
+    function entity:moveTurret(AimPos:vector, AimOffset:vector, Disabled:number) {
+        
+        #Function shamelessly copied from an E2 by worldpeace and modified to fit my needs
+
+        if(Disabled) {return}
+        
+        local HAng = This["GParent", entity]:heading(AimPos + AimOffset)
+        local CTAng = This["TAnchorHolo", entity]:toLocal(This["GParent", entity]:angles())
+        local RateSmoother = ang(positive(vec(clamp(HAng, -ang(This["Smoothing", number]), ang(This["Smoothing", number])))) / vec(This["Smoothing", number]))
+        local Rate = ang(This["Rate", number]) * RateSmoother
+        local TAng = clamp(CTAng - HAng, CTAng - Rate, CTAng + Rate)
+        local NAng = clamp(TAng, This["Min", angle], This["Max", angle])
+        holoAng(holoIndex(This["TParent", entity]), This["TAnchorHolo", entity]:toWorld(NAng * ang(0, 1, 0)))
+        holoAng(holoIndex(This["GParent", entity]), This["TAnchorHolo", entity]:toWorld(NAng))
+        holoPos(holoIndex(This["AimposHolo", entity]), This["GChild", entity]:pos() + (This["GChild", entity]:forward() * GlobalVariables["DistToTarget", number]))
+
+    }
+    
+    function number entity:solveDragCoeff(AreaMulti:number) {
+        return 1 + (_PI * ((This:acfCaliber() * (AreaMulti * 0.05)) ^ 2)) / (10000 * This:acfProjectileMass() / acfDragDiv())
+    }
+    
+    function vector solveBallistics(Gun:entity, Range:number, Drag:number, Toggle:number) {
+        
+        if (!Toggle) {return vec(0,0,0)}
+            #local Drag = (0.000314*Gun:acfCaliber()^2) / acfDragDiv()
+            local Distance = Range * 0.0254 * 0.75                                              #Convert Range to distance in meters
+            local Muzzle_Vel = Gun:acfMuzzleVel()                                               #Get muzzle velocity in m/s
+                  Muzzle_Vel = Muzzle_Vel + (9999*(Muzzle_Vel == 0))                            #Stoopit Hack to prevent infinities
+
+            local Time = Distance / Muzzle_Vel                                                  
+            local Displacement = (gravity() * Time^2) * Drag
+            return (vec(0, 0, 1) * Displacement)                                                #Output
+    }
+    
+    function wirelink:setCamVars(GVars:table) {
+            This["Position", vector] = GVars["TurretGroups", table][GVars["ActiveTurretGroup", number], table]["Cameras", table][GVars["ActiveCamIndex", number], table]["Parent", entity]:pos()
+            This["Parent", entity] = GVars["TurretGroups", table][GVars["ActiveTurretGroup", number], table]["Cameras", table][GVars["ActiveCamIndex", number], table]["Parent", entity]
+            This["Distance", number] = GVars["TurretGroups", table][GVars["ActiveTurretGroup", number], table]["Cameras", table][GVars["ActiveCamIndex", number], table]["Distance", number]
+            
+    }
+    
+    function table:setPY_DesignatorAngles(HitPos:vector) {
+        local HeadingToAimPos = This["Designator", entity]:heading(HitPos)
+        
+        This["DesignatorWirelink", wirelink]:setNumber("Pitch", HeadingToAimPos:pitch())
+        This["DesignatorWirelink", wirelink]:setNumber("Yaw", HeadingToAimPos:yaw())
+    }
+    
+    function wirelink:egpUpdateLaseIndicator(Index) {
+        
+    }
+    
+    function wirelink:egpUpdateAimposIndicators(Index) {
+        
+        for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
+            EGP:egpAlpha(GlobalVariables["AllTurrets", array][I, entity]["TrackerID", number], 0)
+        }
+        
+        for(I = 1, GlobalVariables["TurretGroups", table][Index, table]["Turrets", array]:count()) {
+            EGP:egpAlpha(GlobalVariables["TurretGroups", table][Index, table]["Turrets", array][I, entity]["TrackerID", number], 255)
+        }
+    }
+    
+    function wirelink:egpUpdateVignette(State) {
+        State = State * 255
+        This:egpAlpha(egpMaxObjects(), State)
+        This:egpAlpha(egpMaxObjects()-1, State)
+        This:egpAlpha(egpMaxObjects()-2, State)
+        This:egpAlpha(egpMaxObjects()-3, State)
+    }
+    
+    function table:initTimers() {
+        
+        This["LASE_blinker", number] = systime()
+        This["LASE_state", number] = 0
+    }
+
+    
+    function wirelink:egpClkUpdate(Base:entity) {
+        
+        #SPEEDOMETER
+        This:egpSetText(HUDelements["Speedo", number], "[" + round(Base:vel():length() * 3600 * 0.0000254 * 0.75, 0) + "]")
+     
+        #AIM DISTANCE
+        This:egpSetText(HUDelements["Dist", number], "DIST: " + round(GlobalVariables["DistToTarget", number] * 0.0254 * 0.75) + "m")
+        
+        #LASE INDICATOR
+        local T1 = Timer["LASE_blinker", number]
+        local D1 = 0.333
+        This:egpColor(HUDelements["LASEIndicator", number], vec(Timer["LASE_state", number] * 255, 0, 0))
+        Timer["LASE_state", number] = Timer["LASE_state", number] + (systime() - T1 > D1) 
+        Timer["LASE_state", number] = Timer["LASE_state", number] - (Timer["LASE_state", number] == 2) * Timer["LASE_state", number]
+        Timer["LASE_blinker", number] = ((systime() - T1 > D1) * systime()) + ((systime() - T1 < D1) * T1)
+        
+    }
+    
+    function wirelink:egpUpdateWepGroupLists(TGroup:number, WGroup:number) {
+        for(I = 1, GlobalVariables["AllListHudElements", array]:count()) {
+            This:egpAlpha(GlobalVariables["AllListHudElements", array][I, number], 0)
+        }
+        
+        for(I = 1, GlobalVariables["TurretGroups", table][TGroup, table]["WeaponGroups", table][WGroup, table]["ListsHudElements", array]:count()) {
+            This:egpAlpha(GlobalVariables["TurretGroups", table][TGroup, table]["WeaponGroups", table][WGroup, table]["ListsHudElements", array][I, number], 255)
+        }
+    }
+    
+    function wirelink:egpUpdateConsole(Event:string) {
+        local TimeOf_LastEvent = 0 
+        
+        if(changed(Event) & Event != "") {
+            TimeOf_LastEvent = curtime()
+            GlobalVariables["ConsoleLog", array]:unshiftString(Event)
+            GlobalVariables["ConsoleLog", array]:remove(6)
+            
+            This:egpSetText(HUDelements["ConsoleLines", table][1, number], "1> " + GlobalVariables["ConsoleLog", array][1, string])
+            This:egpSetText(HUDelements["ConsoleLines", table][2, number], "2> " + GlobalVariables["ConsoleLog", array][2, string])
+            This:egpSetText(HUDelements["ConsoleLines", table][3, number], "3> " + GlobalVariables["ConsoleLog", array][3, string])
+            This:egpSetText(HUDelements["ConsoleLines", table][4, number], "4> " + GlobalVariables["ConsoleLog", array][4, string])
+            This:egpSetText(HUDelements["ConsoleLines", table][5, number], "5> " + GlobalVariables["ConsoleLog", array][5, string])
+            }
+        return
+    }
+    
+    function wirelink:initEGP_Radar(Radar:wirelink) {
+        
+    }
+    
+    function wirelink:egpUpdateRadarSigs(Radar:wirelink) {
+        
+    }
+    
+    function wirelink:egpUpdateRadarScanlines() {
+        
+        #This shits way too expensive, unused
+        #HUDelements["RadarScanlines", table]["EGP_Indexes", array]
+        
+        local EGPIndexes = HUDelements["RadarScanlines", table]["EGP_Indexes", array]
+        local ScanlineCount = EGPIndexes:count()
+        local Alphas = HUDelements["RadarScanlines", table]["Alphas", array]
+        local Acc = HUDelements["RadarScanlines", table]["Accumulator", number]
+        HUDelements["RadarScanlines", table]["Alphas", array][HUDelements["RadarScanlines", table]["Active_Index", number], number] = 90
+        HUDelements["RadarScanlines", table]["Active_Index", number] = HUDelements["RadarScanlines", table]["Active_Index", number] + Acc
+        if(HUDelements["RadarScanlines", table]["Active_Index", number] == ScanlineCount | HUDelements["RadarScanlines", table]["Active_Index", number] == 1) 
+        {HUDelements["RadarScanlines", table]["Accumulator", number] = -Acc}
+        
+        for(I = 1, ScanlineCount) {
+            Alphas[I, number] = clamp(Alphas[I, number] - 7.5, 0, 90)
+            This:egpAlpha(EGPIndexes[I, number], Alphas[I, number])
+        }
+        #HUDelements["RadarScanlines", table]["Active_Index", number] = HUDelements["RadarScanlines", table]["Active_Index", number] + Acc
+        #This:egpAlpha(HUDelements["RadarScanlines", table]["EGP_Indexes", array][HUDelements["RadarScanlines", table]["Active_Index", number], number], 90)
+        #HUDelements["RadarScanlines", table]["Alphas", array][HUDelements["RadarScanlines", table]["Active_Index", number], number] = 90
+        #if(HUDelements["RadarScanlines", table]["Active_Index", number] == ScanlineCount | HUDelements["RadarScanlines", table]["Active_Index", number] == 1) 
+        #{HUDelements["RadarScanlines", table]["Accumulator", number] = -Acc}
+    }
+    
+    function wirelink:initEGP(Step) {
+    
+        INIT_START = systime()
+        
+        local SC = egpScrSize(Pod["Driver", entity]) / 2 + vec2(-1, 0)
+        local N = This:egpNumObjects()
+        local Points = array()
+        local FontSize = 12
+        local FONT = "Lucida Console"
+        
+        HUDcolors[1, vector4] = vec4(215, 135, 0, 255)
+        HUDcolors[2, vector4] = vec4(215, 135, 0, 255)
+        HUDcolors[3, vector4] = vec4(0, 0, 0, 150)
+        N++
+        
+        #switch(Step) {
+            #case 1,
+                This:egpClear()
+                GlobalVariables["AllListHudElements", array]:clear()
+                GlobalVariables["ConsoleLog", array]:clear()
+                HUDelements["ConsoleLines", table] = table()
+                HUDelements["RadarSigs", table] = table()
+                
+                #Crosshair-----------------------------------------------------------------------------
+                Points = array()
+                for(I = 1, 2) {
+                    Points:pushVector2(SC + vec2(sin(120 * I), -cos(120 * I)) * 10)
+                    Points:pushVector2(SC + vec2())
+                }
+                This:egpPolyOutline(N, Points)
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 2)
+                N++
+                
+                #Radar Display----------------------------------------------------------------------------
+                local RadarResolution = 32 #Max number of objects radar can track, this should be user adjustable.
+                local RadarTopCenter = SC + vec2(0, 125)
+                local RadarSphereCenter = RadarTopCenter + vec2(0, 175)
+                
+                for(I = 1, 4) {
+                    This:egpCircleOutline(N, RadarSphereCenter, vec2(-10, -10) + vec2(25, 25)* I)
+                    This:egpColor(N, HUDcolors[1, vector4])
+                    This:egpSize(N, 1)
+                    N++
+                }
+                
+                for(I = 1, 16) {
+                    This:egpLine(N, RadarSphereCenter + (vec2(sin(22.5 * I), -cos(22.5 * I)) * 15), 
+                                    RadarSphereCenter + (vec2(sin(22.5 * I), -cos(22.5 * I)) * 90.5) )
+                    This:egpColor(N, HUDcolors[1, vector4])
+                    This:egpSize(N, 1)
+                    N++
+                }
+                
+                #Draw all radar signatures
+                for(I = 1, RadarResolution) {
+                    
+                    This:egpBox(N, RadarSphereCenter - vec2(17 + I * 5, -1), vec2(3, 5) )
+                    This:egpColor(N, HUDcolors[1, vector4])
+                    #This:egpAngle(N, 15)
+                    HUDelements["RadarSigs", table][I, number] = N
+                    N++
+                }
+                #[
+                #Draw scanlines
+                #HUDelements["RadarScanlines", table] = table()
+                #HUDelements["RadarScanlines", table]["Alphas", array] = array()
+                #HUDelements["RadarScanlines", table]["EGP_Indexes", array] = array()
+                #HUDelements["RadarScanlines", table]["Active_Index", number] = 1
+                #HUDelements["RadarScanlines", table]["Accumulator", number] = 1
+                local ScanningAngle = 20
+                
+                for(I = 1, ScanningAngle) {
+                    This:egpLine(N, RadarSphereCenter + (vec2(sin(-ScanningAngle / 2 + I), -cos(-ScanningAngle / 2 + I)) * 15), 
+                                    RadarSphereCenter + (vec2(sin(-ScanningAngle / 2 + I), -cos(-ScanningAngle / 2 + I)) * 90.5) )
+                    This:egpSize(N, 2)
+                    This:egpColor(N, HUDcolors[1, vector4])
+                    This:egpAlpha(N, 90)
+                    HUDelements["RadarScanlines", table]["Alphas", array][I, number] = 90
+                    HUDelements["RadarScanlines", table]["EGP_Indexes", array][I, number] = N
+                    N++
+                }]#
+                #break
+            
+            #case 2,
+                #Vehicle Status-----------------------------------------------------------------------------
+                HUDelements["WepGroupName", number] = N
+                This:egpText(N, "VEHICLE_STATUS:", SC + vec2(250, -90))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Speedo-----------------------------------------------------------------------------
+                This:egpText(N, "SPEED_KMH:", SC + vec2(250, -70))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["Speedo", number] = N
+                This:egpText(N, "[0 KMH]", SC + vec2(370, -70))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Active turret group indicator---------------------------------------------------------------------
+                This:egpText(N, "TURRET_GROUP:", SC + vec2(250, -55))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["TurretGroup", number] = N
+                This:egpText(N, "[1 / 1]", SC + vec2(370, -55))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Active weapon group indicator---------------------------------------------------------------------
+                This:egpText(N, "WEAPON_GROUP:", SC + vec2(250, -40))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["WeaponGroup", number] = N
+                This:egpText(N, "[1 / 1]", SC + vec2(370, -40))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Camera Index indicator---------------------------------------------------------------------
+                This:egpText(N, "ACTIVE_CAM:", SC + vec2(250, -25))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["ActiveCam", number] = N
+                This:egpText(N, "[1 / 1]", SC + vec2(370, -25))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Turret Lock Indicator---------------------------------------------------------------------
+                This:egpText(N, "TURRET_LOCK:", SC + vec2(250, -10))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["TurretLock", number] = N
+                This:egpText(N, "[ON]", SC + vec2(370, -10))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Ballistics Indicator---------------------------------------------------------------------
+                This:egpText(N, "BALLISTICS:", SC + vec2(250, 5))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["Ballistics", number] = N
+                This:egpText(N, "[OFF]", SC + vec2(370, 5))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Console---------------------------------------------------------------------------------------        
+                This:egpText(N, "CONSOLE_LOG:", SC + vec2(250, 25))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Line 1
+                HUDelements["ConsoleLines", table][1, number] = N
+                This:egpText(N, "1> -", SC + vec2(250, 84))
+                This:egpFont(N, FONT, 10)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Line 2
+                HUDelements["ConsoleLines", table][2, number] = N
+                This:egpText(N, "2> -", SC + vec2(250, 73))
+                This:egpFont(N, FONT, 10)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                #This:egpAlpha(N, (255/5)*4)
+                N++
+                
+                #Line 3
+                HUDelements["ConsoleLines", table][3, number] = N
+                This:egpText(N, "3> -", SC + vec2(250, 62))
+                This:egpFont(N, FONT, 10)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                #This:egpAlpha(N, (255/5)*3)
+                N++
+                
+                #Line 4
+                HUDelements["ConsoleLines", table][4, number] = N
+                This:egpText(N, "4> -", SC + vec2(250, 51))
+                This:egpFont(N, FONT, 10)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                #This:egpAlpha(N, (255/5)*2)
+                N++
+                
+                #Line 5
+                HUDelements["ConsoleLines", table][5, number] = N
+                This:egpText(N, "5> -", SC + vec2(250, 40))
+                This:egpFont(N, FONT, 10)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                #This:egpAlpha(N, (255/5)*1)
+                N++
+                
+                #Turret group name-----------------------------------------------------------------------------
+                #HUDelements["WepGroupName", number] = N
+                This:egpText(N, "TURRET_GROUP:", SC + vec2(-590, -90))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["TurretGroupName", number] = N
+                This:egpText(N, "_INITIALIZING_", SC + vec2(-475, -90))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Weapon group name-----------------------------------------------------------------------------
+                #HUDelements["WepGroupName", number] = N
+                This:egpText(N, "WEAPON_GROUP:", SC + vec2(-590, -70))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["WepGroupName", number] = N
+                This:egpText(N, "_INITIALIZING_", SC + vec2(-475, -70))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Ammo Group Name---------------------------------------------------------------------------------
+                This:egpText(N, "AMMO_GROUP:", SC + vec2(-590, 70))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["AmmoGroupName", number] = N
+                This:egpText(N, "_INITIALIZING_", SC + vec2(-490, 70))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Ammo Group Types---------------------------------------------------------------------------------
+                This:egpText(N, "AMMO_TYPES:", SC + vec2(-590, 85))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["AmmoTypes", number] = N
+                This:egpText(N, "_INITIALIZING_", SC + vec2(-490, 85))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Primaries-----------------------------------------------------------------------------
+                This:egpText(N, "PRIMARY_LIST:", SC + vec2(-590, -50))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #Secondaries-----------------------------------------------------------------------------
+                This:egpText(N, "SECONDARY_LIST:", SC + vec2(-415, -50))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 0)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                       
+                #Aim Distance-----------------------------------------------------------------------
+                HUDelements["Dist", number] = N
+                This:egpText(N, "DIST: 0m", SC + vec2(0, 40))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 1)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                #LASE Indicator
+                HUDelements["LASEIndicator", number] = N
+                This:egpText(N, "LASE", SC + vec2(0, -40))
+                This:egpFont(N, FONT, FontSize)
+                This:egpAlign(N, 1)
+                This:egpColor(N, vec(255, 0, 0))
+                This:egpAlpha(N, 0)
+                N++
+                
+                #Secondary Firing Indicator----------------------------------------------------------
+                This:egpBoxOutline(N, SC + vec2(65, -30), vec2(7, 7))
+                This:egpSize(N, 1)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["SFiringIndicator", number] = N
+                This:egpBox(N, SC + vec2(65, -30), vec2(6, 6))
+                This:egpColor(N, vec(255, 0, 0))
+                N++
+                
+                #Primary Firing Indicator--------------------------------------------------------------
+                This:egpBoxOutline(N, SC + vec2(-65, -30), vec2(7, 7))
+                This:egpSize(N, 1)
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                HUDelements["PFiringIndicator", number] = N
+                This:egpBox(N, SC + vec2(-65, -30), vec2(6, 6))
+                This:egpColor(N, vec(255, 0, 0))
+                N++
+                
+                #Turret aimpos indicators----------------------------------------------------------------------------------------
+                for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
+                    EGP:egp3DTracker(N, vec())    
+                    EGP:egpParent(N, GlobalVariables["AllTurrets", array][I, entity]["AimposHolo", entity])
+                    N++                  
+                    GlobalVariables["AllTurrets", array][I, entity]["TrackerID", number] = N
+                    EGP:egpCircleOutline(N, vec2(), vec2(3,3)) #EGP:egpPos(N-1)
+                    EGP:egpColor(N, vec(255, 0, 0))
+                    EGP:egpParent(N, N-1)
+                    N++
+                }
+                #break
+                
+            #case 3,
+                #Draw all possible weapon groups-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                for(TurretIndex = 1, GlobalVariables["TurretGroups", table]:count()) {
+                    for(GroupIndex = 1, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table]:count()) {
+                        
+                        local MaxListSize = GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Secondary", array]:count()
+                                          + GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Primary", array]:count()
+                                          + 1
+                        
+                        for(PWepIndex = 1, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Primary", array]:count()) {
+                            local Pos = SC + vec2(-590, -50 + (PWepIndex * 15))
+                            GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:pushNumber(N)
+                            GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:remove(MaxListSize)
+                            GlobalVariables["AllListHudElements", array]:pushNumber(N)
+                            EGP:egpText(N, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Primary", array][PWepIndex, entity]:getName(), Pos)
+                            This:egpFont(N, FONT, FontSize)
+                            EGP:egpColor(N, HUDcolors[1, vector4])
+                            N++
+                        }
+                        for(SWepIndex = 1, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Secondary", array]:count()) {
+                            local Pos = SC + vec2(-415, -50 + (SWepIndex * 15))
+                            GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:pushNumber(N)
+                            GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:remove(MaxListSize)
+                            GlobalVariables["AllListHudElements", array]:pushNumber(N)
+                            EGP:egpText(N, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Secondary", array][SWepIndex, entity]:getName(), Pos)
+                            This:egpFont(N, FONT, FontSize)
+                            EGP:egpColor(N, HUDcolors[1, vector4])
+                            N++
+                        }
+                    }
+                }
+                
+                #Hud lines----------------------------------------------------------------
+                This:egpLine(N, SC + vec2(-60, 0), SC + vec2(-240, 0))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 2)
+                N++
+                
+                This:egpLine(N, SC + vec2(60, 0), SC + vec2(240, 0))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 2)
+                N++
+                
+                This:egpLine(N, SC + vec2(50, 15), SC + vec2(90, 15))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(25, 30), SC + vec2(55, 30))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(50, -15), SC + vec2(90, -15))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(25, -30), SC + vec2(55, -30))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(-50, 15), SC + vec2(-90, 15))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(-25, 30), SC + vec2(-55, 30))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(-50, -15), SC + vec2(-90, -15))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(-25, -30), SC + vec2(-55, -30))
+                This:egpColor(N, HUDcolors[1, vector4])
+                N++
+                
+                This:egpLine(N, SC + vec2(240, 30), SC + vec2(240, -30))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 3)
+                N++
+                
+                This:egpLine(N, SC + vec2(-240, 30), SC + vec2(-240, -30))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 3)
+                N++
+                
+                #--------------------------------------------------------------
+                
+                This:egpLine(N, SC + vec2(-240, 100), SC + vec2(-240, -100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 1)
+                N++
+                
+                This:egpLine(N, SC + vec2(-239, -100), SC + vec2(-360, -100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 3)
+                N++
+                
+                This:egpLine(N, SC + vec2(-240, -100), SC + vec2(-600, -100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 1)
+                N++
+                
+                This:egpLine(N, SC + vec2(-239, 100), SC + vec2(-360, 100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 3)
+                N++
+                
+                This:egpLine(N, SC + vec2(-240, 100), SC + vec2(-600, 100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 1)
+                N++
+                
+                #--------------------------------------------------------------
+                
+                This:egpLine(N, SC + vec2(240, 100), SC + vec2(240, -100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 1)
+                N++
+                
+                This:egpLine(N, SC + vec2(240, -100), SC + vec2(360, -100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 3)
+                N++
+                
+                This:egpLine(N, SC + vec2(240, -100), SC + vec2(600, -100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 1)
+                N++
+                
+                This:egpLine(N, SC + vec2(240, 100), SC + vec2(360, 100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 3)
+                N++
+                
+                This:egpLine(N, SC + vec2(240, 100), SC + vec2(600, 100))
+                This:egpColor(N, HUDcolors[1, vector4])
+                This:egpSize(N, 1)
+                N++
+                
+                #VIGNETTE
+                #"vgui/zoom"
+                
+                #Top Right
+                This:egpBox(egpMaxObjects(), SC * vec2(1.5, 0.5), SC + vec2(5, 1))
+                This:egpMaterial(egpMaxObjects(), "vgui/zoom")
+                This:egpColor(egpMaxObjects(), HUDcolors[1, vector4])
+                This:egpAlpha(egpMaxObjects(), 0)
+                
+                #Bottom Left
+                This:egpBox(egpMaxObjects()-1, SC * vec2(0.5, 1.5), (SC + vec2(5, 1)) * vec2(-1, -1))
+                This:egpMaterial(egpMaxObjects()-1, "vgui/zoom")
+                This:egpColor(egpMaxObjects()-1, HUDcolors[1, vector4])
+                This:egpAlpha(egpMaxObjects()-1, 0)
+                
+                #Top Left
+                This:egpBox(egpMaxObjects()-2, SC * vec2(0.5, 0.5) + vec2(-3, -1), SC * vec2(0.5645, 1.779))
+                This:egpAngle(egpMaxObjects()-2, 90)
+                This:egpMaterial(egpMaxObjects()-2, "vgui/zoom")
+                This:egpColor(egpMaxObjects()-2, HUDcolors[1, vector4])
+                This:egpAlpha(egpMaxObjects()-2, 0)
+                
+                #Bottom Right
+                This:egpBox(egpMaxObjects()-3, SC * vec2(1.5, 1.5) + vec2(3, 1), SC * vec2(0.5645, 1.779))
+                This:egpAngle(egpMaxObjects()-3, 270)
+                This:egpMaterial(egpMaxObjects()-3, "vgui/zoom")
+                This:egpColor(egpMaxObjects()-3, HUDcolors[1, vector4])
+                This:egpAlpha(egpMaxObjects()-3, 0)
+                #break
+            
+            #case 4,
+                This:egpUpdateAimposIndicators(GlobalVariables["ActiveTurretGroup", number])
+                This:egpUpdateWepGroupLists(GlobalVariables["ActiveTurretGroup", number], GlobalVariables["ActiveWepGroup", number])
+                
+                local WGroup = GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table][GlobalVariables["ActiveWepGroup", number], table]
+                
+                EGP:egpSetText(HUDelements["AmmoGroupName", number], WGroup["AmmoGroups", table][WGroup["ActiveAmmoGroup", number], table]["Name", string])
+                EGP:egpSetText(HUDelements["AmmoTypes", number], WGroup["AmmoGroups", table][WGroup["ActiveAmmoGroup", number], table]["Types", string])
+                EGP:egpSetText(HUDelements["WepGroupName", number], WGroup["Name", string])
+                EGP:egpSetText(HUDelements["TurretGroupName", number], GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Name", string])   
+                EGP:egpSetText(HUDelements["TurretGroup", number], "[" + GlobalVariables["ActiveTurretGroup", number] + " / " + GlobalVariables["TurretGroups", table]:count() + "]")
+                EGP:egpSetText(HUDelements["WeaponGroup", number], "[" + GlobalVariables["ActiveWepGroup", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table]:count() + "]") 
+                EGP:egpSetText(HUDelements["ActiveCam", number], "[" + GlobalVariables["ActiveCamIndex", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Cameras", table]:count() + "]") 
+            
+                print("EGP_INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")
+                #break
+        #}
+    }
+    
+    function table:initGlobalVars() {
+        This["TickInterval", number]     = This["TickInterval", number] * 15
+        This["FOV", number]              = This["MaxFOV", number]
+        This["GunLock", number]          = 1
+        This["ZoomIndex", number]        = 1
+        This["ActiveTIndex", number]     = 1
+        This["DistToTarget", number]     = 1
+        This["DragCoeff", number]        = 1
+        This["Built", number]            = 0
+        This["CamToggle", number]        = 0                         
+        #This["TurretCount", number]      = 0
+        This["BallisticsToggle", number] = 0
+        This["ActiveTurretGroup", number]= 1
+        This["ActiveWepGroup", number]   = 1
+        This["ActiveCamIndex", number]   = 1
+        This["TurretGroups", table]      = table()
+        This["Keybinds", table]          = table()
+        This["AllLaunchers", table]      = table()
+        This["AllTurrets", array]        = array()
+        This["ConsoleLog", array]        = array()
+        This["AllListHudElements", array]= array()
+        
+        #This could be cleaner
+        This["ConsoleIdler", array]      = array()
+        This["ConsoleIdler", array][1, string] = "."
+        This["ConsoleIdler", array][2, string] = ".."
+        This["ConsoleIdler", array][3, string] = "..."
+        
+    }
+    
+    function string table:keyClk_parsePlayerKeys(Player:entity, AmmoTable:table, Keybinds:table) {
+        
+        local TurretGroupCount  = This["TurretGroups", table]:count()
+        local ActiveTurretGroup = This["TurretGroups", table][This["ActiveTurretGroup", number], table]
+        local ActiveCameraTable = ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]
+        local ActiveWeaponGroup = ActiveTurretGroup["WeaponGroups", table][This["ActiveWepGroup", number], table]
+        local ActiveAmmoGroup   = ActiveWeaponGroup["AmmoGroups", table][ActiveWeaponGroup["ActiveAmmoGroup", number], table]
+        
+        if(Player:keyPressed(Keybinds["FireMain", string])) {
+            #ActiveTurret["GChild", entity]:acfFire(1)
+            ActiveWeaponGroup["Primary", array]:fireWeaponGroup(1)
+            EGP:egpColor(HUDelements["PFiringIndicator", number], vec(0, 255, 0))
+            } else {
+                ActiveWeaponGroup["Primary", array]:fireWeaponGroup(0)
+                EGP:egpColor(HUDelements["PFiringIndicator", number], vec(255, 0, 0))
+                }
+            
+        if(Player:keyPressed(Keybinds["FireCoax", string])) {
+            ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(1)
+            EGP:egpColor(HUDelements["SFiringIndicator", number], vec(0, 255, 0))
+            } else {
+                ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(0)
+                EGP:egpColor(HUDelements["SFiringIndicator", number], vec(255, 0, 0))
+                }
+                
+        if(Player:keyPressed(Keybinds["LASE", string])) {
+            ActiveTurretGroup["DesignatorWirelink", wirelink]:setNumber("Lase", 1)
+            EGP:egpAlpha(HUDelements["LASEIndicator", number], 255)
+            } else {
+                ActiveTurretGroup["DesignatorWirelink", wirelink]:setNumber("Lase", 0)
+                EGP:egpAlpha(HUDelements["LASEIndicator", number], 0)
+                }
+
+        
+        #keyClk() is 1 when the player presses a key, and -1 when player releases key, we only do stuff on key down events
+        if(keyClk(Player) == 1) {
+            
+            #Get the key that caused the chips current execution and store it in Key
+            Key = keyClkPressed()
+            #This["TurretGroups", table][This["ActiveTurretGroup", number], table]
+            
+            switch(Key) {   
+                case Keybinds["ZoomIn", string],  
+                    This["ZoomIndex", number] = clamp(This["ZoomIndex", number] + 1, 0, This["ZoomLevels", number])
+                    Cam["FOV", number] = clamp(This["MaxFOV", number] - ((This["MaxFOV", number] - This["MinFOV", number]) / This["ZoomLevels", number]) * This["ZoomIndex", number], This["MinFOV", number], This["MaxFOV", number])
+                    #This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
+                return Key
+                
+                case Keybinds["ZoomOut", string],
+                    This["ZoomIndex", number] = clamp(This["ZoomIndex", number] - 1, 0, This["ZoomLevels", number])
+                    Cam["FOV", number] = clamp(This["MaxFOV", number] - ((This["MaxFOV", number] - This["MinFOV", number]) / This["ZoomLevels", number]) * This["ZoomIndex", number], This["MinFOV", number], This["MaxFOV", number] )
+                    #This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
+                return Key
+                
+                case Keybinds["ZoomSwitch", string],
+                    This["ZoomIndex", number] = This["ZoomIndex", number] + 1
+                    This["ZoomIndex", number] = This["ZoomIndex", number] - ((This["ZoomIndex", number] == This["ZoomLevels", number]) * This["ZoomLevels", number])
+                    Cam["FOV", number] = clamp(This["MaxFOV", number] - ((This["MaxFOV", number] - This["MinFOV", number]) / This["ZoomLevels", number]) * This["ZoomIndex", number], This["MinFOV", number], This["MaxFOV", number])
+                    This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
+                    soundVolume("ZoomSwitch", This["SoundVolume", number])
+                return Key
+                
+                case Keybinds["AmmoSwitch", string],
+                    ActiveWeaponGroup["ActiveAmmoGroup", number] = ActiveWeaponGroup["ActiveAmmoGroup", number] + 1
+                    ActiveWeaponGroup["ActiveAmmoGroup", number] = ActiveWeaponGroup["ActiveAmmoGroup", number] - ((ActiveWeaponGroup["ActiveAmmoGroup", number] == ActiveWeaponGroup["AmmoGroupCount", number] + 1) * ActiveWeaponGroup["AmmoGroupCount", number])
+                    setActiveAmmoGroup(This["ActiveTurretGroup", number], This["ActiveWepGroup", number], ActiveWeaponGroup["ActiveAmmoGroup", number])
+                return Key
+                
+                case Keybinds["BallisticSwitch", string],
+                    This["BallisticsToggle", number] = !This["BallisticsToggle", number]
+                    soundStop("BallisticSwitch", 0)
+                    This["SoundOrigin", entity]:soundPlay("BallisticSwitch", 0, "buttons/button17.wav")
+                    EGP:egpSetText(HUDelements["Ballistics", number], This["BallisticsToggle", number]==1 ? "[ON]" : "[OFF]")
+                return Key
+                
+                case Keybinds["GunLock", string],
+                    This["GunLock", number] = !This["GunLock", number]
+                    EGP:egpSetText(HUDelements["TurretLock", number], This["GunLock", number]==1 ? "[ON]" : "[OFF]")
+                return Key
+                
+                case Keybinds["TurretGroupSwitch", string],
+                    local CamCount = ActiveTurretGroup["Cameras", table]:count()
+                    local WepGroupCount = ActiveTurretGroup["WeaponGroups", table]:count()
+                    This["ActiveCamIndex", number] = 1 #This["ActiveCamIndex", number] > This["TurretGroups", table][This["ActiveTurretGroup", number], table]["Cameras", table]:count()
+                    This["ActiveWepGroup", number] = 1
+                    ActiveWeaponGroup["Primary", array]:fireWeaponGroup(0)
+                    ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(0)
+                    
+                    This["ActiveTurretGroup", number] = This["ActiveTurretGroup", number] + 1
+                    This["ActiveTurretGroup", number] = This["ActiveTurretGroup", number] - ((This["ActiveTurretGroup", number] == TurretGroupCount + 1) * TurretGroupCount)
+                    ActiveTurretGroup = This["TurretGroups", table][This["ActiveTurretGroup", number], table]
+                    ActiveWeaponGroup = ActiveTurretGroup["WeaponGroups", table][1, table]
+                    ActiveAmmoGroup = ActiveWeaponGroup["AmmoGroups", table][1, table]
+                    
+                    Cam:setCamVars(This)
+                    #setActiveAmmoGroup(This["ActiveTurretGroup", number], This["ActiveWepGroup", number], ActiveWeaponGroup["ActiveAmmoGroup", number])
+                    EGP:egpSetText(HUDelements["WepGroupName", number], ActiveWeaponGroup["Name", string])
+                    EGP:egpSetText(HUDelements["TurretGroupName", number], ActiveTurretGroup["Name", string])
+                    EGP:egpSetText(HUDelements["TurretGroup", number], "[" + This["ActiveTurretGroup", number] + " / " + TurretGroupCount + "]")
+                    EGP:egpSetText(HUDelements["WeaponGroup", number], "[" + This["ActiveWepGroup", number] + " / " + WepGroupCount + "]") 
+                    EGP:egpSetText(HUDelements["ActiveCam", number], "[" + This["ActiveCamIndex", number] + " / " + CamCount + "]") 
+                    EGP:egpSetText(HUDelements["AmmoGroupName", number], ActiveAmmoGroup["Name", string])
+                    EGP:egpSetText(HUDelements["AmmoTypes", number], ActiveAmmoGroup["Types", string])
+                    EGP:egpUpdateVignette(ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["Vignette", number])
+                    EGP:egpUpdateAimposIndicators(This["ActiveTurretGroup", number]) # ["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]
+                    EGP:egpUpdateWepGroupLists(This["ActiveTurretGroup", number], This["ActiveWepGroup", number])
+                return Key
+   
+                case Keybinds["WeaponGroupSwitch", string],
+                    local WepGroupCount = ActiveTurretGroup["WeaponGroups", table]:count()
+                    #ActiveWeaponGroup["ActiveAmmoGroup", number] = 1
+                    ActiveWeaponGroup["Primary", array]:fireWeaponGroup(0)
+                    ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(0)
+
+                    This["ActiveWepGroup", number] = This["ActiveWepGroup", number] + 1
+                    This["ActiveWepGroup", number] = This["ActiveWepGroup", number] - ((This["ActiveWepGroup", number] == WepGroupCount + 1) * WepGroupCount)
+                    ActiveWeaponGroup = ActiveTurretGroup["WeaponGroups", table][This["ActiveWepGroup", number], table]
+                    ActiveAmmoGroup = ActiveWeaponGroup["AmmoGroups", table][1, table]
+                    #This["MaxAmmoGroup", number] = This["TurretGroups", table][This["ActiveTurretGroup", number], table]["AmmoGroups", table]:count()
+                    
+                    #setActiveAmmoGroup(This["ActiveTurretGroup", number], This["ActiveWepGroup", number], This["ActiveAmmoGroup", number])
+                    EGP:egpSetText(HUDelements["WepGroupName", number], ActiveWeaponGroup["Name", string])
+                    EGP:egpSetText(HUDelements["WeaponGroup", number], "[" + This["ActiveWepGroup", number] + " / " + WepGroupCount + "]") 
+                    EGP:egpSetText(HUDelements["AmmoGroupName", number], ActiveAmmoGroup["Name", string])
+                    EGP:egpSetText(HUDelements["AmmoTypes", number], ActiveAmmoGroup["Types", string])
+                    EGP:egpUpdateWepGroupLists(This["ActiveTurretGroup", number], This["ActiveWepGroup", number])
+                return Key
+                
+                case Keybinds["CamSwitch", string],
+                    local CamCount = ActiveTurretGroup["Cameras", table]:count()
+                    This["ActiveCamIndex", number] = This["ActiveCamIndex", number] + 1
+                    This["ActiveCamIndex", number] = This["ActiveCamIndex", number] - ((This["ActiveCamIndex", number] == CamCount + 1) * CamCount)
+                    Cam:setCamVars(This)
+                    EGP:egpSetText(HUDelements["ActiveCam", number], "[" + This["ActiveCamIndex", number] + " / " + CamCount + "]") 
+                    EGP:egpUpdateVignette(ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["Vignette", number])
+                
+                default,
+                break
+                
+            }
+
+        } 
+        return ""
+    }
+
