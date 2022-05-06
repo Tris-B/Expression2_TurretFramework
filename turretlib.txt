@@ -372,6 +372,7 @@
                 N++
                 
                 #Radar Display----------------------------------------------------------------------------
+                #[
                 local RadarResolution = 32 #Max number of objects radar can track, this should be user adjustable.
                 local RadarTopCenter = SC + vec2(0, 125)
                 local RadarSphereCenter = RadarTopCenter + vec2(0, 175)
@@ -400,6 +401,7 @@
                     HUDelements["RadarSigs", table][I, number] = N
                     N++
                 }
+                ]#
                 #[
                 #Draw scanlines
                 #HUDelements["RadarScanlines", table] = table()
