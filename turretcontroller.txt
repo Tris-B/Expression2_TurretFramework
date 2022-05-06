@@ -20,7 +20,7 @@
     Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
 ]#
 
-if(first() | (first() & dupefinished()) | duped()) {
+if(first() | dupefinished() | duped()) {
 
     INIT_START = systime()
 
