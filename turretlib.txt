@@ -18,7 +18,7 @@
                                 #TurretCount++
                                 HoloCount++
                                 
-        local TAnchorHolo   =   holoCreate(HoloCount+1, TEntity:pos() + TAxis_Offset, vec(2, 2, 0.01) * GlobalVariables["DEBUG", number], TAxis_AngOffset + TEntity:toWorld(ang()), vec(0, 205, 0))
+        local TAnchorHolo   =   holoCreate(HoloCount+1, TEntity:pos() + TAxis_Offset, vec(4, 4, 0.01) * GlobalVariables["DEBUG", number], TAxis_AngOffset + TEntity:toWorld(ang()), vec(0, 205, 0))
         local TParent       =   holoCreate(HoloCount, TAnchorHolo:pos(), vec(0.05, 0.05, 12) * GlobalVariables["DEBUG", number], TAnchorHolo:toWorld(ang()), vec(205, 0, 0))
                                 holoParent(HoloCount, TAnchorHolo)
                                 holoParent(HoloCount+1, TBase)
@@ -83,7 +83,7 @@
         GlobalVariables["TurretGroups", table][Index, table]["DesignatorWirelink", wirelink] = Ent:wirelink()
     }
     
-    function addCamPos(Index:number, Parent:entity, Pos:vector, Dist:number, Vig:number) {
+    function addCamPos(Index:number, Parent:entity, Pos:vector, Dist:number, MinFOV:number, MaxFOV:number, ZoomLevels:number, Vig:number) {
         
         local Cameras = GlobalVariables["TurretGroups", table][Index, table]["Cameras", table]
         local CamGroupCount = Cameras:count()
@@ -99,6 +99,9 @@
         Cameras[CamGroupCount, table]["Parent", entity]    = CamHolo
         Cameras[CamGroupCount, table]["Distance", number]  = Dist
         Cameras[CamGroupCount, table]["Vignette", number]  = Vig
+        Cameras[CamGroupCount, table]["MaxFOV", number]  = MaxFOV
+        Cameras[CamGroupCount, table]["MinFOV", number]  = MinFOV
+        Cameras[CamGroupCount, table]["ZoomLevels", number]  = ZoomLevels
 
     }
     
@@ -204,7 +207,6 @@
 
     }
     
-    
     function buildTurrets() {
         for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
             GlobalVariables["AllTurrets", array][I, entity]["TChild", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["TParent", entity])
@@ -262,10 +264,6 @@
         This["DesignatorWirelink", wirelink]:setNumber("Yaw", HeadingToAimPos:yaw())
     }
     
-    function wirelink:egpUpdateLaseIndicator(Index) {
-        
-    }
-    
     function wirelink:egpUpdateAimposIndicators(Index) {
         
         for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
@@ -291,7 +289,6 @@
         This["LASE_state", number] = 0
     }
 
-    
     function wirelink:egpClkUpdate(Base:entity) {
         
         #SPEEDOMETER
@@ -945,21 +942,21 @@
             
             switch(Key) {   
                 case Keybinds["ZoomIn", string],  
-                    This["ZoomIndex", number] = clamp(This["ZoomIndex", number] + 1, 0, This["ZoomLevels", number])
-                    Cam["FOV", number] = clamp(This["MaxFOV", number] - ((This["MaxFOV", number] - This["MinFOV", number]) / This["ZoomLevels", number]) * This["ZoomIndex", number], This["MinFOV", number], This["MaxFOV", number])
+                    This["ZoomIndex", number] = clamp(This["ZoomIndex", number] + 1, 0, ActiveCameraTable["ZoomLevels", number])
+                    Cam["FOV", number] = clamp(ActiveCameraTable["MaxFOV", number] - ((ActiveCameraTable["MaxFOV", number] - ActiveCameraTable["MinFOV", number]) / ActiveCameraTable["ZoomLevels", number]) * This["ZoomIndex", number], ActiveCameraTable["MinFOV", number], ActiveCameraTable["MaxFOV", number])
                     #This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
                 return Key
                 
                 case Keybinds["ZoomOut", string],
-                    This["ZoomIndex", number] = clamp(This["ZoomIndex", number] - 1, 0, This["ZoomLevels", number])
-                    Cam["FOV", number] = clamp(This["MaxFOV", number] - ((This["MaxFOV", number] - This["MinFOV", number]) / This["ZoomLevels", number]) * This["ZoomIndex", number], This["MinFOV", number], This["MaxFOV", number] )
+                    This["ZoomIndex", number] = clamp(This["ZoomIndex", number] - 1, 0, ActiveCameraTable["ZoomLevels", number])
+                    Cam["FOV", number] = clamp(ActiveCameraTable["MaxFOV", number] - ((ActiveCameraTable["MaxFOV", number] - ActiveCameraTable["MinFOV", number]) / ActiveCameraTable["ZoomLevels", number]) * This["ZoomIndex", number], ActiveCameraTable["MinFOV", number], ActiveCameraTable["MaxFOV", number] )
                     #This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
                 return Key
                 
                 case Keybinds["ZoomSwitch", string],
                     This["ZoomIndex", number] = This["ZoomIndex", number] + 1
-                    This["ZoomIndex", number] = This["ZoomIndex", number] - ((This["ZoomIndex", number] == This["ZoomLevels", number]) * This["ZoomLevels", number])
-                    Cam["FOV", number] = clamp(This["MaxFOV", number] - ((This["MaxFOV", number] - This["MinFOV", number]) / This["ZoomLevels", number]) * This["ZoomIndex", number], This["MinFOV", number], This["MaxFOV", number])
+                    This["ZoomIndex", number] = This["ZoomIndex", number] - ((This["ZoomIndex", number] == ActiveCameraTable["ZoomLevels", number]) * ActiveCameraTable["ZoomLevels", number])
+                    Cam["FOV", number] = clamp(ActiveCameraTable["MaxFOV", number] - ((ActiveCameraTable["MaxFOV", number] - ActiveCameraTable["MinFOV", number]) / ActiveCameraTable["ZoomLevels", number]) * This["ZoomIndex", number], ActiveCameraTable["MinFOV", number], ActiveCameraTable["MaxFOV", number])
                     This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
                     soundVolume("ZoomSwitch", This["SoundVolume", number])
                 return Key
@@ -1034,6 +1031,8 @@
                     local CamCount = ActiveTurretGroup["Cameras", table]:count()
                     This["ActiveCamIndex", number] = This["ActiveCamIndex", number] + 1
                     This["ActiveCamIndex", number] = This["ActiveCamIndex", number] - ((This["ActiveCamIndex", number] == CamCount + 1) * CamCount)
+                    This["ZoomIndex", number] = 1
+                    Cam["FOV", number] = ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["MaxFOV", number]
                     Cam:setCamVars(This)
                     EGP:egpSetText(HUDelements["ActiveCam", number], "[" + This["ActiveCamIndex", number] + " / " + CamCount + "]") 
                     EGP:egpUpdateVignette(ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["Vignette", number])
