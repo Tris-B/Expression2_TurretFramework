@@ -1,0 +1,6 @@
+GlobalVariables = createGlobalVars(Base)
+Keybinds = setPlayerKeybinds()
+Cam["FilterEntities", array] = Base:getConnectedEntities()
+BallisticOffset = vec(0, 0, 0)
+Cam:setCamVars(GlobalVariables)
+print("INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")
