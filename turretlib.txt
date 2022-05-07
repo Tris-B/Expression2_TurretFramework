@@ -321,7 +321,6 @@
     }
     
     function wirelink:egpUpdateConsole(Event:string) {
-        local TimeOf_LastEvent = 0 
         
         if(changed(Event) & Event != "") {
             TimeOf_LastEvent = curtime()
@@ -336,7 +335,7 @@
             }
         return
     }
-     
+    
     function wirelink:initEGP(Step) {
     
         INIT_START = systime()
@@ -358,7 +357,7 @@
                 GlobalVariables["AllListHudElements", array]:clear()
                 GlobalVariables["ConsoleLog", array]:clear()
                 HUDelements["ConsoleLines", table] = table()
-                HUDelements["RadarSigs", table] = table()
+                #HUDelements["RadarSigs", table] = table()
                 
                 #Crosshair-----------------------------------------------------------------------------
                 Points = array()
@@ -890,7 +889,6 @@
         This["DragCoeff", number]        = 1
         This["Built", number]            = 0
         This["CamToggle", number]        = 0                         
-        #This["TurretCount", number]      = 0
         This["BallisticsToggle", number] = 0
         This["ActiveTurretGroup", number]= 1
         This["ActiveWepGroup", number]   = 1
@@ -901,12 +899,6 @@
         This["AllTurrets", array]        = array()
         This["ConsoleLog", array]        = array()
         This["AllListHudElements", array]= array()
-        
-        #This could be cleaner
-        This["ConsoleIdler", array]      = array()
-        This["ConsoleIdler", array][1, string] = "."
-        This["ConsoleIdler", array][2, string] = ".."
-        This["ConsoleIdler", array][3, string] = "..."
         
     }
     
