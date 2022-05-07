@@ -15,6 +15,8 @@
 @trigger Build
 #[   
     CREATED & MAINTAINED BY: Tris#7689 on Discord
+    GITHUB: 
+    
     REFACTORED FROM: An E2 made by worldpeace/UberDude
     
     Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
@@ -63,48 +65,19 @@ if(first() | dupefinished() | duped()) {
         return TableOut
     }
     
-    #CALL INIT FUNCTIONS AND INIT STUFF
+    #CALL USER FUNCTIONS HERE
     
-    #MULTIPLE TURRET SETUP EXAMPLE BELOW
-    #turretInit(GunEntity, TurretEntity, TurretBase, TurretAxisOffset, GunAxisOffset, AngMax, AngMin, Rate, Smoothing)
-    
-    GlobalVariables = createGlobalVars(Base)
-
-    initTurret(                                 #Calling turretInit(), new turrets need to be added to the Turrets[] 
-                                                #table with the appropriate index, using the same index overwrites an existing turret
-                        MAIN_Gun1,              #Gun Entity, this is the main gun of your turret.
-                        MAIN_Turret1,           #Turret Entity, this is your turret base.
-                        Base,                   #Turret Base, the turret ring is parented to this, you can setup
-                                                #turrets on turrets by setting this to the "TParent" of the master turret
-                                                #Like this: Turrets[X, table]["TParent", entity], Replace X with the appropriate turret index
-                        vec(0,0,0),             #Offset of the turret axis, leave as 0 for central axis.
-                        vec(0, 24.5, 0),        #Offset of the gun axis, Offset is relative to guns mass center.
-                        ang(12, 180, 0),        #Angle limit defined as ang(Depression, MaxRight, 0).
-                        ang(-30, -180, 0),      #Angle limit defined as ang(-Elevation, -MaxLeft, 0) KEEP NEGATIVES IN PLACE UNLESS ISSUES ARISE.
-                        30,                     #Traverse rate of turret in degrees/s.
-                        5,                      #Smoothing
-                        ang(0,0,90))            #Turret axis angle offset, use this to fix mis-angled turrets
-    
+    initTurret(MAIN_Gun1, MAIN_Turret1, Base, vec(0,0,0), vec(0, 24.5, 0), ang(12, 180, 0), ang(-30, -180, 0), 30, 5, ang(0,0,90))            
     initTurretGroup(1, "MAIN TURRET", array(MAIN_Turret1))
-    #The above function does this.
-    #turretGroupInit(This is the First group, Name in HUD is "MAIN TURRET", array of all Turret bases in group)
+
     addCamPos(1, Base, vec(0,0,100), 200, 0) 
-    #The above function does this.
-    #addCamPos(Add to First Turret Group, Attach Cam to Base, Offset Centre Point by xyz, Place Cam 200 units away from Centre, Dont Use Vignette)
     addCamPos(1, MAIN_Turret1, vec(24, 36, 30), 0, 1)
-    #The above function does this.
-    #addCamPos(Add to First Turret Group, Attach Cam to MAIN_Turret1, Offset Centre Point by xyz, Place Cam 0 units away from Centre, Use Vignette)
     setDesignator(1, Designator)
-    
+
     addWeaponGroup(1, "MAIN", array(MAIN_Gun1), array(AUX_Gun1))
-    #The above function does this.
-    #addWeaponGroup(Add to First turret group, Name in HUD is "MAIN", Array of all Primary Weapons, Array of all Secondary Weapons)
-    addAmmoGroup(1, 1, "[1 / 2]", array("57mmSAAPHE"))
-    addAmmoGroup(1, 1, "[2 / 2]", array("57mmSAAPDS"))
-    #The above function does this.
-    #addWeaponGroup(Add to First turret group, Add to First weapon group, Name in HUD is "[2 / 2]", Array of all Ammo Types included)
-    #The names of ammo types can be found by calling acfNameShort() on an acf ammo crate.
-    
+    addAmmoGroup(1, 1, "[1 / 2]", array("57mmSA APHE"))
+    addAmmoGroup(1, 1, "[2 / 2]", array("57mmSA APDS"))
+
     addWeaponGroup(1, "LAUNCHER", array(AUX_Gun2), array())
     addAmmoGroup(1, 2, "[MSL_HEAT]", array("BGM-71E ASMHEAT"))
 
