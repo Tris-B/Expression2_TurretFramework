@@ -1,5 +1,4 @@
-GlobalVariables = createGlobalVars(Base)
-Keybinds = setPlayerKeybinds()
+#Keybinds = setPlayerKeybinds()
 Cam["FilterEntities", array] = Base:getConnectedEntities()
 BallisticOffset = vec(0, 0, 0)
 Cam:setCamVars(GlobalVariables)
