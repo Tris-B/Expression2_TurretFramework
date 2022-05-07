@@ -29,42 +29,43 @@ if(first() | dupefinished() | duped()) {
     #include "Expression2_TurretFramework/turretlib"
     #include "Expression2_TurretFramework/doc"
 
-    function table createGlobalVars(Base:entity) {
+    #CONFIG
+    #------------------------------------------------------------------------------------
+    #Set DEBUG to 1 when editing to see things like cam positions and turret axis points
+    GlobalVariables["DEBUG", number]           = 1
 
-        local TableOut = table()
-        
-        #YOU CAN EDIT THESE
-        TableOut["DEBUG", number]           = 0     #Set this to 1 when editing to see things like cam positions and axis points
-        TableOut["TickInterval", number]    = 4     #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
-        TableOut["MinFOV", number]          = 3     #Minimum FOV, a smaller number will give stronger magnification
-        TableOut["MaxFOV", number]          = 90    #Maximum FOV, set this to the default FOV you use in your game settings
-        TableOut["ZoomLevels", number]      = 8     #Amount of Zoom levels you can switch between, when set to 1, you will always be fully zoomed out
-
-        TableOut:initGlobalVars()
-        return TableOut
-        
-    }
+    #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
+    GlobalVariables["TickInterval", number]    = 4
+    #------------------------------------------------------------------------------------
     
-    function table setPlayerKeybinds() {
-        
-        local TableOut = table()
-        
-        TableOut["AmmoSwitch", string]          = "1"
-        TableOut["WeaponGroupSwitch", string]   = "2"
-        TableOut["BallisticSwitch", string]     = "3"
-        TableOut["TurretGroupSwitch", string]   = "5"
-        TableOut["GunLock", string]             = "c"
-        TableOut["CamSwitch", string]           = "v"
-        TableOut["LASE", string]                = "x"
-        TableOut["FireCoax", string]            = "mouse_right"
-        TableOut["FireMain", string]            = "mouse_left"
-        TableOut["ZoomIn", string]              = "mouse_wheel_up"
-        TableOut["ZoomOut", string]             = "mouse_wheel_down"
-        #TableOut["ZoomSwitch", string] = ""
-
-        return TableOut
-    }
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    GlobalVariables:initGlobalVars()
+    #------------------------------------------------------------------------------------
     
+    #KEYBINDS
+    #------------------------------------------------------------------------------------
+    #
+    Keybinds["AmmoSwitch", string]          = "1"
+    Keybinds["WeaponGroupSwitch", string]   = "2"
+    Keybinds["BallisticSwitch", string]     = "3"
+    Keybinds["GunLock", string]             = "c"
+    Keybinds["CamSwitch", string]           = "v"
+    Keybinds["LASE", string]                = "x"
+    Keybinds["FireCoax", string]            = "mouse_right"
+    Keybinds["FireMain", string]            = "mouse_left"
+    
+    #bind this if you are using more than 1 turret group
+    Keybinds["TurretGroupSwitch", string]   = ""
+
+    #by default zooming in/out is done with mousewheel, however due to the way e2 detects inputs, it can cause cpu usage spikes
+    #the alternative is using a zoom switch or not using the mousewheel for zooming in/out
+    Keybinds["ZoomIn", string]              = "mouse_wheel_up"
+    Keybinds["ZoomOut", string]             = "mouse_wheel_down"
+    #dont bind ZoomSwitch when ZoomIn/ZoomOut around being used, use one or the other
+    Keybinds["ZoomSwitch", string]          = ""
+    #------------------------------------------------------------------------------------
+
     #CALL USER FUNCTIONS HERE
     
     initTurret(MAIN_Gun1, MAIN_Turret1, Base, vec(0,0,0), vec(0, 24.5, 0), ang(12, 180, 0), ang(-30, -180, 0), 30, 5, ang(0,0,90))            
