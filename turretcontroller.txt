@@ -107,83 +107,15 @@ if(first() | dupefinished() | duped()) {
     
     addWeaponGroup(1, "LAUNCHER", array(AUX_Gun2), array())
     addAmmoGroup(1, 2, "[MSL_HEAT]", array("BGM-71E ASMHEAT"))
-    
-    #Dont touch the stuff below
-    Keybinds = setPlayerKeybinds()
-    Cam["FilterEntities", array] = Base:getConnectedEntities()
-    BallisticOffset = vec(0, 0, 0)
-    Cam:setCamVars(GlobalVariables)
-    print("INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")
-    #END OF IF(FIRST | DUPEFINISHED)
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    #include "Expression2_TurretFramework/init"
+    #------------------------------------------------------------------------------------
     
 }
 
-if(Build & !GlobalVariables["Built", number]) {
-    
-    GlobalVariables["Built", number] = 1
-    buildTurrets()
-}
-
-# START OF "MAIN()"-------------------------------------------------------------
-
-interval(500)
-
-if(changed(Pod["Active", number])) {
-    
-    runOnKeys(Driver, 0)
-    
-    if(Pod["Active", number]){
-        
-    Driver = Pod["Driver", entity]
-    runOnKeys(Driver, 1)
-    EGP:initEGP(1)
-    Cam["Activated", number] = 1
-    setActiveAmmoGroup(GlobalVariables["ActiveTurretGroup", number], GlobalVariables["ActiveWepGroup", number], 1)
-    reloadAllEmptyLaunchers()
-    
-    } else {
-    
-    runOnKeys(Driver, 0)
-    #Driver = noentity()
-    Cam["Activated", number] = 0
-    
-    }
-}
-
-if(keyClk(Driver)) {
-    
-    DSTRING = keyClkPressed()
-    GlobalVariables:keyClk_parsePlayerKeys(Driver, AmmoTable, Keybinds)
-    
-}
-
-if(Pod["Active", number] & !keyClk(Driver)) {
-    
-    interval(GlobalVariables["TickInterval", number])
-    
-    US = cpuUsage() * 1000000
-    EGP:egpClkUpdate(Base)
-    #EGP:egpUpdateRadarScanlines()
-    EGP:egpUpdateConsole(CONSOLE_EVENT)
-    
-    GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]:setPY_DesignatorAngles(Cam["HitPos",vector])
-    GlobalVariables["DistToTarget", number] = GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][1, entity]["GParent", entity]:pos():distance(Cam["HitPos",vector]) #GParent:pos():distance(Cam_HitPos)
-
-    for(I = 1, GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array]:count()) {
-        GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][I, entity]:moveTurret(
-            Cam["HitPos",vector], 
-            solveBallistics(
-                        GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][I, entity]["GChild", entity], 
-                        GlobalVariables["DistToTarget", number], 
-                        1, 
-                        GlobalVariables["BallisticsToggle", number] ), 
-            GlobalVariables["GunLock", number] )
-    }
-
-    #DNUM = GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][1, entity]["GChild", entity]:solveDragCoeff(3),
-    #DTABLE = GlobalVariables["TurretGroups", table][1, table]["WeaponGroups", table][1, table]["AmmoGroups", table][1, table]
-    #DTABLE = HUDelements["RadarSigs", table]
-    #DARRAY = GlobalVariables["ConsoleLog", array]
-    #DVEC = GlobalVariables["AllTurrets", array][1, entity]["AimposHolo", entity]:pos()
-    #DNUM = HUDelements["RadarScanlines", table]["Accumulator", number]
-}
+#Dont touch this unless you want trouble
+#------------------------------------------------------------------------------------
+#include "Expression2_TurretFramework/main"
+#------------------------------------------------------------------------------------
