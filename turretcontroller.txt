@@ -72,8 +72,8 @@ if(first() | dupefinished() | duped()) {
     initTurret(MAIN_Gun1, MAIN_Turret1, Base, vec(0,0,0), vec(0, 24.5, 0), ang(12, 180, 0), ang(-30, -180, 0), 30, 5, ang(0,0,90))            
     initTurretGroup(1, "MAIN TURRET", array(MAIN_Turret1))
 
-    addCamPos(1, Base, vec(0,0,100), 200, 0) 
-    addCamPos(1, MAIN_Turret1, vec(24, 36, 30), 0, 1)
+    addCamPos(1, Base, vec(0,0,100), 200, 90, 90, 0, 0)
+    addCamPos(1, MAIN_Turret1, vec(24, 36, 30), 0, 3, 90, 4, 1)
     setDesignator(1, Designator)
 
     addWeaponGroup(1, "MAIN", array(MAIN_Gun1), array(AUX_Gun1))
