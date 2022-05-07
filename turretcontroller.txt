@@ -14,8 +14,9 @@
 
 @trigger Build
 #[   
-    CREATED & MAINTAINED BY: Tris#7689 on Discord
+    AUTHOR: Tris
     GITHUB: 
+    DSCORD: Tris#7689
     
     REFACTORED FROM: An E2 made by worldpeace/UberDude
     
