@@ -25,10 +25,18 @@
 
 if(first() | dupefinished() | duped()) {
 
+    #This is used to display how long the init phase takes 
     INIT_START = systime()
+    #Because the e2 does 90% of its work on init, intense workloads can trigger tick quota
+    #As long as the E2 doesnt crash when refreshed after being fully setup, it shouldnt tick quota at any point after that
+    #However, you shouldnt run into any issues unless you are using 10+ turrets though
 
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
     #include "Expression2_TurretFramework/turretlib"
-    #include "Expression2_TurretFramework/doc"
+    #------------------------------------------------------------------------------------
+
+
 
     #CONFIG
     #------------------------------------------------------------------------------------
@@ -38,11 +46,15 @@ if(first() | dupefinished() | duped()) {
     #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
     GlobalVariables["TickInterval", number]    = 4
     #------------------------------------------------------------------------------------
+
+
     
     #Dont touch this unless you want trouble
     #------------------------------------------------------------------------------------
     GlobalVariables:initGlobalVars()
     #------------------------------------------------------------------------------------
+
+
     
     #KEYBINDS
     #------------------------------------------------------------------------------------
@@ -67,7 +79,10 @@ if(first() | dupefinished() | duped()) {
     Keybinds["ZoomSwitch", string]          = ""
     #------------------------------------------------------------------------------------
 
+
+
     #CALL USER FUNCTIONS HERE
+    #------------------------------------------------------------------------------------
     
     initTurret(MAIN_Gun1, MAIN_Turret1, Base, vec(0,0,0), vec(0, 24.5, 0), ang(12, 180, 0), ang(-30, -180, 0), 30, 5, ang(0,0,90))            
     initTurretGroup(1, "MAIN TURRET", array(MAIN_Turret1))
@@ -82,6 +97,10 @@ if(first() | dupefinished() | duped()) {
 
     addWeaponGroup(1, "LAUNCHER", array(AUX_Gun2), array())
     addAmmoGroup(1, 2, "[MSL_HEAT]", array("BGM-71E ASMHEAT"))
+
+    #------------------------------------------------------------------------------------
+
+
 
     #Dont touch this unless you want trouble
     #------------------------------------------------------------------------------------
