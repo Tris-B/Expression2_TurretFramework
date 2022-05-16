@@ -1,4 +1,4 @@
-@name Turret Controller [4.2.0]
+@name Turret Controller
 
 @inputs [Base]:entity
 @inputs [MAIN_Gun1 AUX_Gun1 AUX_Gun2 MAIN_Turret1 Designator]:entity # MAIN TURRET 1
@@ -18,7 +18,10 @@
     GITHUB: 
     DSCORD: Tris#7689
     
+    VERSION: v4.3.0 09/05/2022
+
     REFACTORED FROM: An E2 made by worldpeace/UberDude
+    PASTEBIN: https://pastebin.com/QD41qv1K
     
     Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
 ]#
@@ -29,8 +32,8 @@ if(first() | dupefinished() | duped()) {
     INIT_START = systime()
     #Because the e2 does 90% of its work on init, intense workloads can trigger tick quota
     #As long as the E2 doesnt crash when refreshed after being fully setup, it shouldnt tick quota at any point after that
-    #However, you shouldnt run into any issues unless you are using 10+ turrets though
-
+    #However, you shouldnt run into any issues unless you are using 10+ turrets
+    
     #Dont touch this unless you want trouble
     #------------------------------------------------------------------------------------
     #include "Expression2_TurretFramework/turretlib"
@@ -45,13 +48,6 @@ if(first() | dupefinished() | duped()) {
 
     #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
     GlobalVariables["TickInterval", number]    = 4
-    #------------------------------------------------------------------------------------
-
-
-    
-    #Dont touch this unless you want trouble
-    #------------------------------------------------------------------------------------
-    GlobalVariables:initGlobalVars()
     #------------------------------------------------------------------------------------
 
 
@@ -75,8 +71,16 @@ if(first() | dupefinished() | duped()) {
     #the alternative is using a zoom switch or not using the mousewheel for zooming in/out
     Keybinds["ZoomIn", string]              = "mouse_wheel_up"
     Keybinds["ZoomOut", string]             = "mouse_wheel_down"
+    
     #dont bind ZoomSwitch when ZoomIn/ZoomOut around being used, use one or the other
     Keybinds["ZoomSwitch", string]          = ""
+    #------------------------------------------------------------------------------------
+
+
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    GlobalVariables:initGlobalVars()
     #------------------------------------------------------------------------------------
 
 
