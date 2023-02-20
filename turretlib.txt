@@ -3,18 +3,18 @@
 @outputs Rate
 @persist [GlobalVariables Turrets Keybinds AmmoTable HUDelements Timer Sounds]:table [HUDcolors]:array SC:vector2
     
-#[   
+#[  
     AUTHOR: Tris
     GITHUB: 
     DSCORD: Tris#7689
-
+    
     VERSION: v4.5.0 [09/05/2022]
     
     REFACTORED FROM: An E2 made by worldpeace/UberDude
     PASTEBIN: https://pastebin.com/QD41qv1K
     
     Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
-]#
+]#  
     
     function initTurret(GEntity:entity, TEntity:entity, TBase:entity, TAxis_Offset:vector, GAxis_Offset:vector, AngMax:angle, AngMin:angle, Rate:number, Smoothing:number, TAxis_AngOffset:angle) {
         
