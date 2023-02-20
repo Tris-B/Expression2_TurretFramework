@@ -1,5 +1,5 @@
-@name TurretLib [4.4.2]
-@inputs [Pod Cam EGP Radar]:wirelink
+@name TurretLib
+@inputs [Pod Cam EGP]:wirelink
 @outputs Rate
 @persist [GlobalVariables Turrets Keybinds AmmoTable HUDelements Timer State]:table [HUDcolors]:array SC:vector2
     
