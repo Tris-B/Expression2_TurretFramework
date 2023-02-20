@@ -34,7 +34,7 @@
                                 TEntity["TParent", entity] = TParent
                                 HoloCount += 2
         
-        local GAnchorHolo   =   holoCreate(HoloCount+1, GEntity:massCenter() + GAxis_Offset, vec(2, 0.01, 2) * GlobalVariables["DEBUG", number], TAnchorHolo:toWorld(ang()), vec(0, 205, 0))
+        local GAnchorHolo   =   holoCreate(HoloCount+1, GEntity:pos() + GAxis_Offset, vec(2, 0.01, 2) * GlobalVariables["DEBUG", number], TAnchorHolo:toWorld(ang()), vec(0, 205, 0))
         local GParent       =   holoCreate(HoloCount, GAnchorHolo:pos(), vec(0.05, 12, 0.05) * GlobalVariables["DEBUG", number], TAnchorHolo:toWorld(ang()), vec(0, 0, 205))
                                 holoParent(HoloCount, GAnchorHolo)
                                 holoParent(HoloCount+1, TParent)
