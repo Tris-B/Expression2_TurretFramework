@@ -115,7 +115,9 @@
         
         local WepGroup = GlobalVariables["TurretGroups", table][Index, table]["WeaponGroups", table]
         local WepGroupCount = WepGroup:count()
+        local ISIN = Index + "/" + WepGroupCount
         local Concat = array()
+        local Links = array()
         #local N = EGP:egpNumObjects()
         
         WepGroupCount++
@@ -132,9 +134,18 @@
         for(I = 1, Primary:count()) {
             #Add wirelink to gun
             Primary[I, entity]["Wirelink", wirelink] = Primary[I, entity]:wirelink()
+
             #Get all acf links and add to end of Concat local array
-            Concat = Concat:add(Primary[I, entity]:acfLinks())
-            #If weapon is a launcher, add to launchers table
+            Links = Primary[I, entity]:acfLinks()
+            for(I = 1, Links:count()) {
+                if(Links[I, entity]["ISIN_WEPGROUP", table][ISIN, number] == 0) {
+                    Concat:pushEntity(Links[I, entity])
+                    Links[I, entity]["ISIN_WEPGROUP", table][ISIN, number] = 1
+                }
+            }
+            #Concat = Concat:add(Primary[I, entity]:acfLinks())
+
+            #If weapon is not a gun, it must be a launcher
             if(Primary[I, entity]:acfIsGun() == 0) {GlobalVariables["AllLaunchers", table][Primary[I, entity]:id(), entity] = Primary[I, entity]}
         }
         
