@@ -1,0 +1,133 @@
+@name Turret Controller [Bulldog II CVR]
+
+@inputs [Base]:entity
+@inputs [MAIN_Gun1 AUX_Gun1 AUX_Gun2 MAIN_Turret1 Designator]:entity # MAIN TURRET 1
+
+@inputs Build 
+@inputs CONSOLE_EVENT:string
+
+@persist [Driver]:entity
+
+@trigger Build
+#[   
+    AUTHOR: Tris
+    GITHUB: 
+    DSCORD: Tris#7689
+    
+    REFACTORED FROM: An E2 made by worldpeace/UberDude
+    PASTEBIN: https://pastebin.com/QD41qv1K
+    
+    Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
+]#
+
+if(first() | dupefinished() | duped()) {
+
+    #This is used to display how long the init phase takes 
+    INIT_START = systime()
+    #Because the e2 does 90% of its work on init, intense workloads can trigger tick quota
+    #As long as the E2 doesnt crash when refreshed after being fully setup, it shouldnt tick quota at any point after that
+    #However, you shouldnt run into any issues unless you are using 10+ turrets
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    #include "Expression2_TurretFramework/turretlib"
+    #------------------------------------------------------------------------------------
+
+
+
+    #CONFIG
+    #------------------------------------------------------------------------------------
+    #Set DEBUG to 1 when editing to see things like cam positions and turret axis points
+    GlobalVariables["DEBUG", number]           = 0
+
+    #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
+    GlobalVariables["TickInterval", number]    = 4
+    
+    #Where to play sounds from
+    GlobalVariables["SoundOrigin", entity]     = Base
+    #------------------------------------------------------------------------------------
+
+
+    
+    #KEYBINDS
+    #------------------------------------------------------------------------------------
+    #
+    Keybinds["AmmoSwitch", string]          = "1"
+    Keybinds["WeaponGroupSwitch", string]   = "2"
+    Keybinds["BallisticSwitch", string]     = "3"
+    Keybinds["GunLock", string]             = "c"
+    Keybinds["CamSwitch", string]           = "v"
+    Keybinds["LASE", string]                = "x"
+    Keybinds["FireCoax", string]            = "mouse_right"
+    Keybinds["FireMain", string]            = "mouse_left"
+    
+    #bind this if you are using more than 1 turret group
+    Keybinds["TurretGroupSwitch", string]   = ""
+
+    #by default zooming in/out is done with mousewheel, however due to the way e2 detects inputs, it can cause cpu usage spikes
+    #the alternative is using a zoom switch or not using the mousewheel for zooming in/out
+    Keybinds["ZoomIn", string]              = "mouse_wheel_up"
+    Keybinds["ZoomOut", string]             = "mouse_wheel_down"
+    
+    #dont bind ZoomSwitch when ZoomIn/ZoomOut around being used, use one or the other
+    Keybinds["ZoomSwitch", string]          = ""
+    #------------------------------------------------------------------------------------
+
+    #SOUNDS
+    #------------------------------------------------------------------------------------
+    #Sounds are triggered when a keybind is used
+    Sounds["AmmoSwitch", string]          = "acf_missiles/fx/bomb_reload.mp3"
+    Sounds["WeaponGroupSwitch", string]   = "buttons/button22.wav"
+    Sounds["BallisticSwitch", string]     = "buttons/button17.wav"
+    Sounds["GunLock", string]             = ""
+    Sounds["CamSwitch", string]           = "buttons/lightswitch2.wav"
+    Sounds["LASE", string]                = "ambient/misc/flour_light.wav"
+    Sounds["FireCoax", string]            = ""
+    Sounds["FireMain", string]            = ""
+    Sounds["TurretGroupSwitch", string]   = ""
+    Sounds["ZoomSwitch", string]          = ""
+    
+    #with great power, comes great responsibility
+    Sounds["ZoomIn", string]              = ""
+    Sounds["ZoomOut", string]             = ""
+    #------------------------------------------------------------------------------------
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    GlobalVariables:initGlobalVars()
+    #------------------------------------------------------------------------------------
+
+
+
+    #CALL USER FUNCTIONS HERE
+    #------------------------------------------------------------------------------------
+    
+    initTurret(MAIN_Gun1, MAIN_Turret1, Base, vec(0,0,0), vec(0, 24.5, 0), ang(12, 180, 0), ang(-30, -180, 0), 30, 5, ang(0,0,90))            
+    initTurretGroup(1, "MAIN TURRET", array(MAIN_Turret1))
+
+    addCamPos(1, Base, vec(0,0,100), 200, 90, 90, 0, 0)
+    addCamPos(1, MAIN_Turret1, vec(24, 36, 30), 0, 3, 90, 4, 1)
+    setDesignator(1, Designator)
+
+    addWeaponGroup(1, "MAIN", array(MAIN_Gun1), array(AUX_Gun1))
+    addAmmoGroup(1, 1, "[1 / 2]", array("57mmSA APHE"))
+    addAmmoGroup(1, 1, "[2 / 2]", array("57mmSA APDS"))
+
+    addWeaponGroup(1, "LAUNCHER", array(AUX_Gun2), array())
+    addAmmoGroup(1, 2, "[MSL_HEAT]", array("BGM-71E ASMHEAT"))
+
+    #------------------------------------------------------------------------------------
+
+
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    #include "Expression2_TurretFramework/init"
+    #------------------------------------------------------------------------------------
+    
+}
+
+#Dont touch this unless you want trouble
+#------------------------------------------------------------------------------------
+#include "Expression2_TurretFramework/main"
+#------------------------------------------------------------------------------------
