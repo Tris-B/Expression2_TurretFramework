@@ -1,0 +1,130 @@
+@name Turret Controller [M3 Lee]
+
+@inputs [Base]:entity
+@inputs [P_Gun1 P_Gun2 S_Gun1]:entity #GUNS
+@inputs [TURRET1 TURRET2 TURRET3]:entity #TURRETS
+
+@inputs Build 
+@inputs CONSOLE_EVENT:string
+
+@outputs BallisticOffset:vector
+@outputs US 
+@outputs DNUM:number DVEC:vector DSTRING:string DTABLE:table DARRAY:array DENTITY:entity DANGLE:angle
+
+@persist [Driver]:entity
+
+@trigger Build
+#[   
+    AUTHOR: Tris
+    GITHUB: 
+    DSCORD: Tris#7689
+    
+    VERSION: v4.3.0 [09/05/2022]
+
+    REFACTORED FROM: An E2 made by worldpeace/UberDude
+    PASTEBIN: https://pastebin.com/QD41qv1K
+    
+    Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
+]#
+
+if(first() | dupefinished() | duped()) {
+
+    #This is used to display how long the init phase takes 
+    INIT_START = systime()
+    #Because the e2 does 90% of its work on init, intense workloads can trigger tick quota
+    #As long as the E2 doesnt crash when refreshed after being fully setup, it shouldnt tick quota at any point after that
+    #However, you shouldnt run into any issues unless you are using 10+ turrets
+    
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    #include "Expression2_TurretFramework/turretlib"
+    #------------------------------------------------------------------------------------
+
+
+
+    #CONFIG
+    #------------------------------------------------------------------------------------
+    #Set DEBUG to 1 when editing to see things like cam positions and turret axis points
+    GlobalVariables["DEBUG", number]           = 1
+
+    #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
+    GlobalVariables["TickInterval", number]    = 4
+    #------------------------------------------------------------------------------------
+
+
+    
+    #KEYBINDS
+    #------------------------------------------------------------------------------------
+    #
+    Keybinds["AmmoSwitch", string]          = "1"
+    Keybinds["WeaponGroupSwitch", string]   = "2"
+    Keybinds["BallisticSwitch", string]     = "3"
+    Keybinds["GunLock", string]             = "c"
+    Keybinds["CamSwitch", string]           = "v"
+    Keybinds["LASE", string]                = "x"
+    Keybinds["FireCoax", string]            = "mouse_right"
+    Keybinds["FireMain", string]            = "mouse_left"
+    
+    #bind this if you are using more than 1 turret group
+    Keybinds["TurretGroupSwitch", string]   = "5"
+
+    #by default zooming in/out is done with mousewheel, however due to the way e2 detects inputs, it can cause cpu usage spikes
+    #the alternative is using a zoom switch or not using the mousewheel for zooming in/out
+    Keybinds["ZoomIn", string]              = "mouse_wheel_up"
+    Keybinds["ZoomOut", string]             = "mouse_wheel_down"
+    
+    #dont bind ZoomSwitch when ZoomIn/ZoomOut around being used, use one or the other
+    Keybinds["ZoomSwitch", string]          = ""
+    #------------------------------------------------------------------------------------
+
+
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    GlobalVariables:initGlobalVars()
+    #------------------------------------------------------------------------------------
+
+
+
+    #CALL USER FUNCTIONS HERE
+    #------------------------------------------------------------------------------------
+    
+    initTurret(P_Gun1, TURRET1, Base, vec(0, 0, 0), vec(0, 0, 0), ang(12, 20, 0), ang(-30, -60, 0), 30, 5, ang(0, 0, 90))
+    initTurret(P_Gun2, TURRET2, Base, vec(0, 0, 0), vec(0, 0, 0), ang(12, 180, 0), ang(-30, -180, 0), 30, 5, ang(0, 0, -90))
+    initTurret(S_Gun1, TURRET3, TURRET2, vec(0, 0, 0), vec(0, 0, 0), ang(12, 180, 0), ang(-30, -180, 0), 30, 5, ang(0, 0, -90))
+    
+    
+    
+    initTurretGroup(1, "HULL", array(TURRET1))
+    
+    addCamPos(1, Base, vec(0, 0, 100), 200, 90, 90, 0, 0)
+    
+    addWeaponGroup(1, "HULL GUN", array(P_Gun1), array())
+    addAmmoGroup(1, 1, "[1 / 2]", array("76mmSC APHE"))
+    addAmmoGroup(1, 1, "[2 / 2]", array("76mmSC HEAT"))
+    
+    
+    
+    initTurretGroup(2, "TURRETS", array(TURRET2, TURRET3))
+
+    addCamPos(2, TURRET2, vec(-12, 18, 18), 0, 3, 90, 4, 1)
+
+    addWeaponGroup(2, "TURRET GUNS", array(P_Gun2), array(S_Gun1))
+    addAmmoGroup(2, 1, "[1 / 2]", array("37mmC APHE"))
+    addAmmoGroup(2, 1, "[2 / 2]", array("37mmC APCR"))
+
+    #------------------------------------------------------------------------------------
+
+
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    #include "Expression2_TurretFramework/init"
+    #------------------------------------------------------------------------------------
+    
+}
+
+#Dont touch this unless you want trouble
+#------------------------------------------------------------------------------------
+#include "Expression2_TurretFramework/main"
+#------------------------------------------------------------------------------------
