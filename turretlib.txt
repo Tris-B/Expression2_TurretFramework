@@ -20,7 +20,6 @@
         
         #local TurretCount   =   GlobalVariables["TurretCount", number]
         local HoloCount     =   holoAmount()
-        local TableOut      =   table()
                                 #TurretCount++
                                 HoloCount++
                                 
