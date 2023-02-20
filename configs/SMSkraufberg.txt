@@ -1,0 +1,287 @@
+@name Turret Controller [SMS Kraufberg]
+
+@inputs [Base]:entity
+@inputs [MAIN_Gun1 MAIN_Turret1]:entity # MAIN TURRET 1
+@inputs [MAIN_Gun2 MAIN_Turret2]:entity # MAIN TURRET 2
+@inputs [MAIN_Gun3 MAIN_Turret3]:entity # MAIN TURRET 3
+@inputs [MAIN_Gun4 MAIN_Turret4]:entity # MAIN TURRET 4
+@inputs [AUX_Gun1 AUX_Turret1]:entity # AUX TURRET 1
+@inputs [AUX_Gun2 AUX_Turret2]:entity # AUX TURRET 2
+@inputs [AUX_Gun3 AUX_Turret3]:entity # AUX TURRET 3
+@inputs [AUX_Gun4 AUX_Turret4]:entity # AUX TURRET 4
+@inputs [AUX_Gun5 AUX_Turret5]:entity # AUX TURRET 5
+@inputs [AUX_Gun6 AUX_Turret6]:entity # AUX TURRET 6
+
+@inputs Build 
+@inputs CONSOLE_EVENT:string
+
+@outputs BallisticOffset:vector
+@outputs US 
+@outputs DNUM:number DVEC:vector DSTRING:string DTABLE:table DARRAY:array DENTITY:entity DANGLE:angle
+
+@persist [Driver]:entity
+
+@trigger Build
+#[   
+    AUTHOR: Tris
+    GITHUB: 
+    DSCORD: Tris#7689
+    
+    VERSION: v4.3.0 [09/05/2022]
+
+    REFACTORED FROM: An E2 made by worldpeace/UberDude
+    PASTEBIN: https://pastebin.com/QD41qv1K
+    
+    Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
+]#
+
+if(first() | dupefinished() | duped()) {
+
+    #This is used to display how long the init phase takes 
+    INIT_START = systime()
+    #Because the e2 does 90% of its work on init, intense workloads can trigger tick quota
+    #As long as the E2 doesnt crash when refreshed after being fully setup, it shouldnt tick quota at any point after that
+    #However, you shouldnt run into any issues unless you are using 10+ turrets
+    
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    #include "Expression2_TurretFramework/turretlib"
+    #------------------------------------------------------------------------------------
+
+
+
+    #CONFIG
+    #------------------------------------------------------------------------------------
+    #Set DEBUG to 1 when editing to see things like cam positions and turret axis points
+    GlobalVariables["DEBUG", number]           = 1
+
+    #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
+    GlobalVariables["TickInterval", number]    = 4
+    #------------------------------------------------------------------------------------
+
+
+    
+    #KEYBINDS
+    #------------------------------------------------------------------------------------
+    #
+    Keybinds["AmmoSwitch", string]          = "1"
+    Keybinds["WeaponGroupSwitch", string]   = "2"
+    Keybinds["BallisticSwitch", string]     = "3"
+    Keybinds["GunLock", string]             = "c"
+    Keybinds["CamSwitch", string]           = "v"
+    Keybinds["LASE", string]                = "x"
+    Keybinds["FireCoax", string]            = "mouse_right"
+    Keybinds["FireMain", string]            = "mouse_left"
+    
+    #bind this if you are using more than 1 turret group
+    Keybinds["TurretGroupSwitch", string]   = "5"
+
+    #by default zooming in/out is done with mousewheel, however due to the way e2 detects inputs, it can cause cpu usage spikes
+    #the alternative is using a zoom switch or not using the mousewheel for zooming in/out
+    Keybinds["ZoomIn", string]              = "mouse_wheel_up"
+    Keybinds["ZoomOut", string]             = "mouse_wheel_down"
+    
+    #dont bind ZoomSwitch when ZoomIn/ZoomOut around being used, use one or the other
+    Keybinds["ZoomSwitch", string]          = ""
+    #------------------------------------------------------------------------------------
+
+
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    GlobalVariables:initGlobalVars()
+    #------------------------------------------------------------------------------------
+
+
+
+    #CALL USER FUNCTIONS HERE
+    #------------------------------------------------------------------------------------
+    
+    initTurret(                                 #Calling initTurret(), new turrets need to be added to the Turrets[] 
+                                                #table with the appropriate index, using the same index overwrites an existing turret
+                        MAIN_Gun1,              #Gun Entity, this is the main gun of your turret.
+                        MAIN_Turret1,           #Turret Entity, this is your turret base.
+                        Base,                   #Turret Base, the turret ring is parented to this, you can setup
+                                                #turrets on turrets by setting this to the "TParent" of the master turret
+                                                #Like this: Turrets[X, table]["TParent", entity], Replace X with the appropriate turret index
+                        vec(0,0,0),             #Offset of the turret axis, leave as 0 for central axis.
+                        vec(0, -165, 0),        #Offset of the gun axis, Offset is relative to guns mass center.
+                        ang(2, 130, 0),         #Angle limit defined as ang(Depression, MaxRight, 0).
+                        ang(-20, -120, 0),      #Angle limit defined as ang(-Elevation, -MaxLeft, 0) KEEP NEGATIVES IN PLACE UNLESS ISSUES ARISE.
+                        15,                     #Traverse rate of turret in degrees/s.
+                        10,                     #Smoothing 
+                        ang(0,0,0))            #Turret axis angle offset, use this to fix mis-angled turrets
+                        
+
+    initTurret(                                     
+                        MAIN_Gun2,              
+                        MAIN_Turret2,         
+                        Base,                 
+                                               
+                        vec(0,0,0),           
+                        vec(0, -165, 0),       
+                        ang(2, 130, 0),       
+                        ang(-20, -120, 0),     
+                        15,                   
+                        10,                   
+                        ang(0,0,0))          
+                        
+
+    initTurret(                              
+                                              
+                        MAIN_Gun3,          
+                        MAIN_Turret3,      
+                        Base,                   
+                                               
+                        vec(0,0,0),            
+                        vec(0, 165, 0),       
+                        ang(2, 130, 0),       
+                        ang(-20, -130, 0),      
+                        15,                     
+                        10,           
+                        ang(0,0,0))            
+                        
+
+    initTurret(                               
+                                             
+                        MAIN_Gun4,            
+                        MAIN_Turret4,          
+                        Base,                   
+                                                
+                        vec(0,0,0),             
+                        vec(0, 165, 0),           
+                        ang(2, 140, 0),        
+                        ang(-20, -140, 0),      
+                        15,                     
+                        10,
+                        ang(0,0,0))
+                        
+
+    initTurret(                               
+                                             
+                        AUX_Gun1,            
+                        AUX_Turret1,          
+                        Base,                   
+                                                
+                        vec(0,0,0),             
+                        vec(0, 0, 0),           
+                        ang(5, 95, 0),        
+                        ang(-8, 10, 0),      
+                        40,                     
+                        5,
+                        ang(0,0,0))
+                        
+
+    initTurret(                               
+                                             
+                        AUX_Gun2,            
+                        AUX_Turret2,          
+                        Base,                   
+                                                
+                        vec(0,0,0),             
+                        vec(0, 0, 0),           
+                        ang(5, 95, 0),        
+                        ang(-8, 10, 0),       
+                        40,                     
+                        5,
+                        ang(0,0,0))
+                        
+
+    initTurret(                               
+                                             
+                        AUX_Gun3,            
+                        AUX_Turret3,          
+                        Base,                   
+                                                
+                        vec(0,0,0),             
+                        vec(0, 0, 0),           
+                        ang(5, -15, 0),        
+                        ang(-8, -95, 0),      
+                        40,                     
+                        5,
+                        ang(0,0,0))
+                        
+
+    initTurret(                               
+                                             
+                        AUX_Gun4,            
+                        AUX_Turret4,          
+                        Base,                   
+                                                
+                        vec(0,0,0),             
+                        vec(0, 0, 0),           
+                        ang(5, -10, 0),        
+                        ang(-8, -95, 0),     
+                        40,                     
+                        5,
+                        ang(0,0,0))
+                        
+
+    initTurret(                               
+                                             
+                        AUX_Gun5,            
+                        AUX_Turret5,          
+                        Base,                   
+                                                
+                        vec(0,0,0),             
+                        vec(0, 0, 0),           
+                        ang(5, -10, 0),        
+                        ang(-8, -95, 0),      
+                        40,                     
+                        5,
+                        ang(0,0,0))
+                        
+
+    initTurret(                               
+                                             
+                        AUX_Gun6,            
+                        AUX_Turret6,          
+                        Base,                   
+                                                
+                        vec(0,0,0),             
+                        vec(0, 0, 0),           
+                        ang(5, 95, 0),        
+                        ang(-8, 15, 0),    
+                        40,                     
+                        5,
+                        ang(0,0,0))                                
+                        
+    initTurretGroup(1, "MAIN TURRETS", array(MAIN_Turret1,MAIN_Turret2,MAIN_Turret3,MAIN_Turret4))
+    addCamPos(1, Base, vec(0,0,600), 1900, 0)
+    addCamPos(1, Base, vec(0,450,208), 0, 0)
+    addCamPos(1, MAIN_Turret1, vec(0, -80, 120), 0, 1)
+    addCamPos(1, MAIN_Turret4, vec(0, 80, 120), 0, 1)
+    addWeaponGroup(1, "MAIN", array(MAIN_Gun1,MAIN_Gun2), array(MAIN_Gun3,MAIN_Gun4))
+    #addAmmoGroup(1, 1, "HIGH EXPLOSIVE", array("203mmHW HE"))
+    
+    initTurretGroup(2, "RIGHT SECONDARIES", array(AUX_Turret4,AUX_Turret5,AUX_Turret6))
+    addCamPos(2, Base, vec(200, 0, 400), 100, 0)
+    addCamPos(2, Base, vec(290,1050,-1), 0, 1)
+    addCamPos(2, Base, vec(380,-20,-5), 0, 1) 
+    addCamPos(2, Base, vec(295,-998,-1), 0, 1)
+    addWeaponGroup(2, "MAIN", array(AUX_Gun4, AUX_Gun5, AUX_Gun6), array())
+    #addAmmoGroup(2, 1, "122mm HE", array("122mmHW HE"))
+    
+    initTurretGroup(3, "LEFT SECONDARIES", array(AUX_Turret1,AUX_Turret2,AUX_Turret3))
+    addCamPos(3, Base, vec(-200, 0, 400), 100, 0)
+    addCamPos(3, Base, vec(-290,1050,-1), 0, 1)
+    addCamPos(3, Base, vec(-380,-20,-5), 0, 1) 
+    addCamPos(3, Base, vec(-295,-998,-1), 0, 1)
+    addWeaponGroup(3, "MAIN", array(AUX_Gun1, AUX_Gun2, AUX_Gun3), array())
+    #addAmmoGroup(3, 1, "122mm HE", array("122mmHW HE"))
+
+    #------------------------------------------------------------------------------------
+
+
+
+    #Dont touch this unless you want trouble
+    #------------------------------------------------------------------------------------
+    #include "Expression2_TurretFramework/init"
+    #------------------------------------------------------------------------------------
+    
+}
+
+#Dont touch this unless you want trouble
+#------------------------------------------------------------------------------------
+#include "Expression2_TurretFramework/main"
+#------------------------------------------------------------------------------------
