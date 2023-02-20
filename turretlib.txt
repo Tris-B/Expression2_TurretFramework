@@ -928,25 +928,31 @@
             #ActiveTurret["GChild", entity]:acfFire(1)
             ActiveWeaponGroup["Primary", array]:fireWeaponGroup(1)
             EGP:egpColor(HUDelements["PFiringIndicator", number], vec(0, 255, 0))
+            if(Sounds["FireMain", string] != "") {This["SoundOrigin", entity]:soundPlay("FireMain", 0, Sounds["FireMain", string])}
             } else {
                 ActiveWeaponGroup["Primary", array]:fireWeaponGroup(0)
                 EGP:egpColor(HUDelements["PFiringIndicator", number], vec(255, 0, 0))
+                soundStop("FireMain")
                 }
             
         if(Player:keyPressed(Keybinds["FireCoax", string])) {
             ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(1)
             EGP:egpColor(HUDelements["SFiringIndicator", number], vec(0, 255, 0))
+            if(Sounds["FireCoax", string] != "") {This["SoundOrigin", entity]:soundPlay("FireCoax", 0, Sounds["FireCoax", string])}
             } else {
                 ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(0)
                 EGP:egpColor(HUDelements["SFiringIndicator", number], vec(255, 0, 0))
+                soundStop("FireCoax")
                 }
                 
         if(Player:keyPressed(Keybinds["LASE", string])) {
             ActiveTurretGroup["DesignatorWirelink", wirelink]:setNumber("Lase", 1)
             EGP:egpAlpha(HUDelements["LASEIndicator", number], 255)
+            if(Sounds["LASE", string] != "") {This["SoundOrigin", entity]:soundPlay("LASE", 0, Sounds["LASE", string])}
             } else {
                 ActiveTurretGroup["DesignatorWirelink", wirelink]:setNumber("Lase", 0)
                 EGP:egpAlpha(HUDelements["LASEIndicator", number], 0)
+                soundStop("LASE")
                 }
 
         
@@ -961,44 +967,45 @@
                 case Keybinds["ZoomIn", string],  
                     This["ZoomIndex", number] = clamp(This["ZoomIndex", number] + 1, 0, ActiveCameraTable["ZoomLevels", number])
                     Cam["FOV", number] = clamp(ActiveCameraTable["MaxFOV", number] - ((ActiveCameraTable["MaxFOV", number] - ActiveCameraTable["MinFOV", number]) / ActiveCameraTable["ZoomLevels", number]) * This["ZoomIndex", number], ActiveCameraTable["MinFOV", number], ActiveCameraTable["MaxFOV", number])
-                    #This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
+                    if(Sounds["ZoomIn", string] != "") {This["SoundOrigin", entity]:soundPlay("ZoomIn", 0, Sounds["ZoomIn", string])}
                 return Key
                 
                 case Keybinds["ZoomOut", string],
                     This["ZoomIndex", number] = clamp(This["ZoomIndex", number] - 1, 0, ActiveCameraTable["ZoomLevels", number])
                     Cam["FOV", number] = clamp(ActiveCameraTable["MaxFOV", number] - ((ActiveCameraTable["MaxFOV", number] - ActiveCameraTable["MinFOV", number]) / ActiveCameraTable["ZoomLevels", number]) * This["ZoomIndex", number], ActiveCameraTable["MinFOV", number], ActiveCameraTable["MaxFOV", number] )
-                    #This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
+                    if(Sounds["ZoomOut", string] != "") {This["SoundOrigin", entity]:soundPlay("ZoomOut", 0, Sounds["ZoomOut", string])}
                 return Key
                 
                 case Keybinds["ZoomSwitch", string],
                     This["ZoomIndex", number] = This["ZoomIndex", number] + 1
                     This["ZoomIndex", number] = This["ZoomIndex", number] - ((This["ZoomIndex", number] == ActiveCameraTable["ZoomLevels", number]) * ActiveCameraTable["ZoomLevels", number])
                     Cam["FOV", number] = clamp(ActiveCameraTable["MaxFOV", number] - ((ActiveCameraTable["MaxFOV", number] - ActiveCameraTable["MinFOV", number]) / ActiveCameraTable["ZoomLevels", number]) * This["ZoomIndex", number], ActiveCameraTable["MinFOV", number], ActiveCameraTable["MaxFOV", number])
-                    This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, "buttons/button22.wav")
-                    soundVolume("ZoomSwitch", This["SoundVolume", number])
+                    if(Sounds["ZoomSwitch", string] != "") {This["SoundOrigin", entity]:soundPlay("ZoomSwitch", 0, Sounds["ZoomSwitch", string])}
                 return Key
                 
                 case Keybinds["AmmoSwitch", string],
                     ActiveWeaponGroup["ActiveAmmoGroup", number] = ActiveWeaponGroup["ActiveAmmoGroup", number] + 1
                     ActiveWeaponGroup["ActiveAmmoGroup", number] = ActiveWeaponGroup["ActiveAmmoGroup", number] - ((ActiveWeaponGroup["ActiveAmmoGroup", number] == ActiveWeaponGroup["AmmoGroupCount", number] + 1) * ActiveWeaponGroup["AmmoGroupCount", number])
                     setActiveAmmoGroup(This["ActiveTurretGroup", number], This["ActiveWepGroup", number], ActiveWeaponGroup["ActiveAmmoGroup", number])
+                    if(Sounds["AmmoSwitch", string] != "") {This["SoundOrigin", entity]:soundPlay("AmmoSwitch", 0, Sounds["AmmoSwitch", string])}
                 return Key
                 
                 case Keybinds["BallisticSwitch", string],
                     This["BallisticsToggle", number] = !This["BallisticsToggle", number]
-                    soundStop("BallisticSwitch", 0)
-                    This["SoundOrigin", entity]:soundPlay("BallisticSwitch", 0, "buttons/button17.wav")
                     EGP:egpSetText(HUDelements["Ballistics", number], This["BallisticsToggle", number]==1 ? "[ON]" : "[OFF]")
+                    if(Sounds["BallisticSwitch", string] != "") {This["SoundOrigin", entity]:soundPlay("BallisticSwitch", 0, Sounds["BallisticSwitch", string])}
                 return Key
                 
                 case Keybinds["GunLock", string],
                     This["GunLock", number] = !This["GunLock", number]
                     EGP:egpSetText(HUDelements["TurretLock", number], This["GunLock", number]==1 ? "[ON]" : "[OFF]")
+                    if(Sounds["GunLock", string] != "") {This["SoundOrigin", entity]:soundPlay("GunLock", 0, Sounds["GunLock", string])}
                 return Key
                 
-                case Keybinds["TurretGroupSwitch", string],
+                case Keybinds["TurretGroupSwitch", string],                
                     local CamCount = ActiveTurretGroup["Cameras", table]:count()
                     local WepGroupCount = ActiveTurretGroup["WeaponGroups", table]:count()
+                    
                     This["ActiveCamIndex", number] = 1 #This["ActiveCamIndex", number] > This["TurretGroups", table][This["ActiveTurretGroup", number], table]["Cameras", table]:count()
                     This["ActiveWepGroup", number] = 1
                     ActiveWeaponGroup["Primary", array]:fireWeaponGroup(0)
@@ -1021,11 +1028,13 @@
                     EGP:egpSetText(HUDelements["AmmoTypes", number], ActiveAmmoGroup["Types", string])
                     EGP:egpUpdateVignette(ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["Vignette", number])
                     EGP:egpUpdateAimposIndicators(This["ActiveTurretGroup", number]) # ["WeaponGroups", table][WepGroup_Index, table]["AmmoGroups", table][AmmoGroup_Index, table]
-                    EGP:egpUpdateWepGroupLists(This["ActiveTurretGroup", number], This["ActiveWepGroup", number])
+                    EGP:egpUpdateWepGroupLists(This["ActiveTurretGroup", number], This["ActiveWepGroup", number])                    
+                    if(Sounds["TurretGroupSwitch", string] != "") {This["SoundOrigin", entity]:soundPlay("TurretGroupSwitch", 0, Sounds["TurretGroupSwitch", string])}
                 return Key
    
-                case Keybinds["WeaponGroupSwitch", string],
+                case Keybinds["WeaponGroupSwitch", string],                
                     local WepGroupCount = ActiveTurretGroup["WeaponGroups", table]:count()
+                    
                     #ActiveWeaponGroup["ActiveAmmoGroup", number] = 1
                     ActiveWeaponGroup["Primary", array]:fireWeaponGroup(0)
                     ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(0)
@@ -1041,18 +1050,22 @@
                     EGP:egpSetText(HUDelements["WeaponGroup", number], "[" + This["ActiveWepGroup", number] + " / " + WepGroupCount + "]") 
                     EGP:egpSetText(HUDelements["AmmoGroupName", number], ActiveAmmoGroup["Name", string])
                     EGP:egpSetText(HUDelements["AmmoTypes", number], ActiveAmmoGroup["Types", string])
-                    EGP:egpUpdateWepGroupLists(This["ActiveTurretGroup", number], This["ActiveWepGroup", number])
+                    EGP:egpUpdateWepGroupLists(This["ActiveTurretGroup", number], This["ActiveWepGroup", number])                    
+                    if(Sounds["WeaponGroupSwitch", string] != "") {This["SoundOrigin", entity]:soundPlay("WeaponGroupSwitch", 0, Sounds["WeaponGroupSwitch", string])}
                 return Key
                 
-                case Keybinds["CamSwitch", string],
+                case Keybinds["CamSwitch", string],                
                     local CamCount = ActiveTurretGroup["Cameras", table]:count()
+                    
                     This["ActiveCamIndex", number] = This["ActiveCamIndex", number] + 1
                     This["ActiveCamIndex", number] = This["ActiveCamIndex", number] - ((This["ActiveCamIndex", number] == CamCount + 1) * CamCount)
                     This["ZoomIndex", number] = 1
                     Cam["FOV", number] = ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["MaxFOV", number]
                     Cam:setCamVars(This)
                     EGP:egpSetText(HUDelements["ActiveCam", number], "[" + This["ActiveCamIndex", number] + " / " + CamCount + "]") 
-                    EGP:egpUpdateVignette(ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["Vignette", number])
+                    EGP:egpUpdateVignette(ActiveTurretGroup["Cameras", table][This["ActiveCamIndex", number], table]["Vignette", number])                
+                    if(Sounds["CamSwitch", string] != "") {This["SoundOrigin", entity]:soundPlay("CamSwitch", 0, Sounds["CamSwitch", string])}
+                return Key
                 
                 default,
                 break
