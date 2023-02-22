@@ -283,11 +283,11 @@
     function wirelink:egpUpdateAimposIndicators(Index) {
         
         for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
-            EGP:egpAlpha(GlobalVariables["AllTurrets", array][I, entity]["TrackerID", number], 0)
+            This:egpAlpha(GlobalVariables["AllTurrets", array][I, entity]["TrackerID", number], 0)
         }
         
         for(I = 1, GlobalVariables["TurretGroups", table][Index, table]["Turrets", array]:count()) {
-            EGP:egpAlpha(GlobalVariables["TurretGroups", table][Index, table]["Turrets", array][I, entity]["TrackerID", number], 255)
+            This:egpAlpha(GlobalVariables["TurretGroups", table][Index, table]["Turrets", array][I, entity]["TrackerID", number], 255)
         }
     }
     
@@ -692,13 +692,13 @@
                 
                 #Turret aimpos indicators----------------------------------------------------------------------------------------
                 for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
-                    EGP:egp3DTracker(N, vec())    
-                    EGP:egpParent(N, GlobalVariables["AllTurrets", array][I, entity]["AimposHolo", entity])
+                    This:egp3DTracker(N, vec())    
+                    This:egpParent(N, GlobalVariables["AllTurrets", array][I, entity]["AimposHolo", entity])
                     N++                  
                     GlobalVariables["AllTurrets", array][I, entity]["TrackerID", number] = N
-                    EGP:egpCircleOutline(N, vec2(), vec2(3,3)) #EGP:egpPos(N-1)
-                    EGP:egpColor(N, vec(255, 0, 0))
-                    EGP:egpParent(N, N-1)
+                    This:egpCircleOutline(N, vec2(), vec2(3,3)) #This:egpPos(N-1)
+                    This:egpColor(N, vec(255, 0, 0))
+                    This:egpParent(N, N-1)
                     N++
                 }
                 #break
@@ -718,9 +718,9 @@
                             GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:pushNumber(N)
                             GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:remove(MaxListSize)
                             GlobalVariables["AllListHudElements", array]:pushNumber(N)
-                            EGP:egpText(N, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Primary", array][PWepIndex, entity]:getName(), Pos)
+                            This:egpText(N, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Primary", array][PWepIndex, entity]:getName(), Pos)
                             This:egpFont(N, FONT, FontSize)
-                            EGP:egpColor(N, HUDcolors[1, vector4])
+                            This:egpColor(N, HUDcolors[1, vector4])
                             N++
                         }
                         for(SWepIndex = 1, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Secondary", array]:count()) {
@@ -728,9 +728,9 @@
                             GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:pushNumber(N)
                             GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["ListsHudElements", array]:remove(MaxListSize)
                             GlobalVariables["AllListHudElements", array]:pushNumber(N)
-                            EGP:egpText(N, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Secondary", array][SWepIndex, entity]:getName(), Pos)
+                            This:egpText(N, GlobalVariables["TurretGroups", table][TurretIndex, table]["WeaponGroups", table][GroupIndex, table]["Secondary", array][SWepIndex, entity]:getName(), Pos)
                             This:egpFont(N, FONT, FontSize)
-                            EGP:egpColor(N, HUDcolors[1, vector4])
+                            This:egpColor(N, HUDcolors[1, vector4])
                             N++
                         }
                     }
@@ -879,13 +879,13 @@
                 
                 local WGroup = GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table][GlobalVariables["ActiveWepGroup", number], table]
                 
-                EGP:egpSetText(HUDelements["AmmoGroupName", number], WGroup["AmmoGroups", table][WGroup["ActiveAmmoGroup", number], table]["Name", string])
-                EGP:egpSetText(HUDelements["AmmoTypes", number], WGroup["AmmoGroups", table][WGroup["ActiveAmmoGroup", number], table]["Types", string])
-                EGP:egpSetText(HUDelements["WepGroupName", number], WGroup["Name", string])
-                EGP:egpSetText(HUDelements["TurretGroupName", number], GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Name", string])   
-                EGP:egpSetText(HUDelements["TurretGroup", number], "[" + GlobalVariables["ActiveTurretGroup", number] + " / " + GlobalVariables["TurretGroups", table]:count() + "]")
-                EGP:egpSetText(HUDelements["WeaponGroup", number], "[" + GlobalVariables["ActiveWepGroup", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table]:count() + "]") 
-                EGP:egpSetText(HUDelements["ActiveCam", number], "[" + GlobalVariables["ActiveCamIndex", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Cameras", table]:count() + "]") 
+                This:egpSetText(HUDelements["AmmoGroupName", number], WGroup["AmmoGroups", table][WGroup["ActiveAmmoGroup", number], table]["Name", string])
+                This:egpSetText(HUDelements["AmmoTypes", number], WGroup["AmmoGroups", table][WGroup["ActiveAmmoGroup", number], table]["Types", string])
+                This:egpSetText(HUDelements["WepGroupName", number], WGroup["Name", string])
+                This:egpSetText(HUDelements["TurretGroupName", number], GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Name", string])   
+                This:egpSetText(HUDelements["TurretGroup", number], "[" + GlobalVariables["ActiveTurretGroup", number] + " / " + GlobalVariables["TurretGroups", table]:count() + "]")
+                This:egpSetText(HUDelements["WeaponGroup", number], "[" + GlobalVariables["ActiveWepGroup", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table]:count() + "]") 
+                This:egpSetText(HUDelements["ActiveCam", number], "[" + GlobalVariables["ActiveCamIndex", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Cameras", table]:count() + "]") 
             
                 print("EGP_INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")
                 #break
