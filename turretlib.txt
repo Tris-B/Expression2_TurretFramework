@@ -15,6 +15,13 @@
     Feel free to contact for issues, suggestions or possible optimizations, any potential improvements are very welcome.
 ]#  
     
+    #Defining some variables in global scope to satisfy the new linter...
+    GlobalVariables = table()
+    HUDelements     = table()
+    Timer           = table()
+    HUDcolors       = array()
+    Sounds          = table()
+    
     function initTurret(GEntity:entity, TEntity:entity, TBase:entity, TAxis_Offset:vector, GAxis_Offset:vector, AngMax:angle, AngMin:angle, Rate:number, Smoothing:number, TAxis_AngOffset:angle) {
         
         #local TurretCount   =   GlobalVariables["TurretCount", number]
