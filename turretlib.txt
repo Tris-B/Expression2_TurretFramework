@@ -342,7 +342,6 @@
     function wirelink:egpUpdateConsole(Event:string) {
         
         if(changed(Event) & Event != "") {
-            TimeOf_LastEvent = curtime()
             GlobalVariables["ConsoleLog", array]:unshiftString(Event)
             GlobalVariables["ConsoleLog", array]:remove(6)
             
