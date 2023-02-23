@@ -929,6 +929,7 @@
         local ActiveWeaponGroup = ActiveTurretGroup["WeaponGroups", table][This["ActiveWepGroup", number], table]
         local ActiveAmmoGroup   = ActiveWeaponGroup["AmmoGroups", table][ActiveWeaponGroup["ActiveAmmoGroup", number], table]
         
+        #For sake of responsiveness, we check for certain keypresses in a less performant way
         if(Player:keyPressed(Keybinds["FireMain", string])) {
             #ActiveTurret["GChild", entity]:acfFire(1)
             ActiveWeaponGroup["Primary", array]:fireWeaponGroup(1)
