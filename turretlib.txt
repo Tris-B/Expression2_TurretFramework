@@ -19,8 +19,9 @@
     GlobalVariables = table()
     HUDelements     = table()
     Timer           = table()
-    HUDcolors       = array()
     Sounds          = table()
+    Keybinds        = table()
+    HUDcolors       = array()
     
     function initTurret(GEntity:entity, TEntity:entity, TBase:entity, TAxis_Offset:vector, GAxis_Offset:vector, AngMax:angle, AngMin:angle, Rate:number, Smoothing:number, TAxis_AngOffset:angle) {
         
