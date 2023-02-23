@@ -355,7 +355,7 @@
         return
     }
     
-    function wirelink:initEGP(Step) {
+    function wirelink:initEGP() {
     
         INIT_START = systime()
         
