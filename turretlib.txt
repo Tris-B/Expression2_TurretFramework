@@ -938,7 +938,7 @@
                 ActiveWeaponGroup["Primary", array]:fireWeaponGroup(0)
                 EGP:egpColor(HUDelements["PFiringIndicator", number], vec(255, 0, 0))
                 soundStop("FireMain")
-                }
+            }
             
         if(Player:keyPressed(Keybinds["FireCoax", string])) {
             ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(1)
@@ -948,7 +948,7 @@
                 ActiveWeaponGroup["Secondary", array]:fireWeaponGroup(0)
                 EGP:egpColor(HUDelements["SFiringIndicator", number], vec(255, 0, 0))
                 soundStop("FireCoax")
-                }
+            }
                 
         if(Player:keyPressed(Keybinds["LASE", string])) {
             ActiveTurretGroup["DesignatorWirelink", wirelink]:setNumber("Lase", 1)
@@ -958,7 +958,7 @@
                 ActiveTurretGroup["DesignatorWirelink", wirelink]:setNumber("Lase", 0)
                 EGP:egpAlpha(HUDelements["LASEIndicator", number], 0)
                 soundStop("LASE")
-                }
+            }
 
         
         #keyClk() is 1 when the player presses a key, and -1 when player releases key, we only do stuff on key down events
