@@ -921,7 +921,7 @@
         
     }
     
-    function string table:keyClk_parsePlayerKeys(Player:entity, AmmoTable:table, Keybinds:table) {
+    function string table:keyClk_parsePlayerKeys(Player:entity, Keybinds:table) {
         
         local TurretGroupCount  = This["TurretGroups", table]:count()
         local ActiveTurretGroup = This["TurretGroups", table][This["ActiveTurretGroup", number], table]
