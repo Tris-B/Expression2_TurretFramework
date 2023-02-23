@@ -1,6 +1,5 @@
 @name TurretLib
 @inputs [Pod Cam EGP]:wirelink
-@outputs Rate
 @persist [GlobalVariables Turrets Keybinds AmmoTable HUDelements Timer Sounds]:table [HUDcolors]:array SC:vector2
     
 #[  
