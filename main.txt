@@ -4,6 +4,8 @@ if(Build & !GlobalVariables["Built", number]) {
     buildTurrets()
 }
 
+    print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: Building")
+    print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: UnBuilding")
 
 interval(500)
 

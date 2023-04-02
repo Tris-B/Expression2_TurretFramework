@@ -2,4 +2,4 @@
 Cam["FilterEntities", array] = Base:getConnectedEntities()
 BallisticOffset = vec(0, 0, 0)
 Cam:setCamVars(GlobalVariables)
-print("INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")
+print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")

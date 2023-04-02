@@ -892,8 +892,8 @@
                 This:egpSetText(HUDelements["TurretGroup", number], "[" + GlobalVariables["ActiveTurretGroup", number] + " / " + GlobalVariables["TurretGroups", table]:count() + "]")
                 This:egpSetText(HUDelements["WeaponGroup", number], "[" + GlobalVariables["ActiveWepGroup", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table]:count() + "]") 
                 This:egpSetText(HUDelements["ActiveCam", number], "[" + GlobalVariables["ActiveCamIndex", number] + " / " + GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Cameras", table]:count() + "]") 
-            
-                print("EGP_INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")
+                
+                print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: EGP_INIT took: " + toString(systime() - INIT_START):sub(1, 6) + " seconds")
                 #break
         #}
     }
