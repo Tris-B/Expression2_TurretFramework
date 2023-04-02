@@ -1,6 +1,7 @@
 @name [TurretFramework] Init
 
 #Keybinds = setPlayerKeybinds()
+runOnLast(1)
 Cam["FilterEntities", array] = Base:getConnectedEntities()
 BallisticOffset = vec(0, 0, 0)
 Cam:setCamVars(GlobalVariables)

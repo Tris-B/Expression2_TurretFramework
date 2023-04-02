@@ -1,4 +1,4 @@
-@name TurretLib
+@name [TurretFramework] Lib
 @inputs [Pod Cam EGP]:wirelink
 @persist [GlobalVariables Turrets Keybinds AmmoTable HUDelements Timer Sounds]:table [HUDcolors]:array
     
@@ -232,8 +232,18 @@
     
     function buildTurrets() {
         for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
+            GlobalVariables["Built", number] = 1
             GlobalVariables["AllTurrets", array][I, entity]["TChild", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["TParent", entity])
             GlobalVariables["AllTurrets", array][I, entity]["GChild", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["GParent", entity])
+            #GlobalVariables["AllTurrets", array][I, entity]["CoaxGun", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["GChild", entity])
+        }
+    }
+    
+    function unbuildTurrets() {
+        for(I = 1, GlobalVariables["AllTurrets", array]:count()) {
+            GlobalVariables["Built", number] = 0
+            GlobalVariables["AllTurrets", array][I, entity]["TChild", entity]:deparent()
+            GlobalVariables["AllTurrets", array][I, entity]["GChild", entity]:deparent()
             #GlobalVariables["AllTurrets", array][I, entity]["CoaxGun", entity]:parentTo(GlobalVariables["AllTurrets", array][I, entity]["GChild", entity])
         }
     }

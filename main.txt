@@ -5,7 +5,10 @@ if(Build & !GlobalVariables["Built", number] & !last()) {
     GlobalVariables["Built", number] = 1
     buildTurrets()
     print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: Building")
+} elseif(last() & GlobalVariables["Built", number]) { 
+    unbuildTurrets() 
     print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: UnBuilding")
+    }
 
 interval(500)
 
