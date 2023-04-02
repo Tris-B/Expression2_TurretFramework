@@ -1,4 +1,4 @@
-@name Turret Controller
+@name [TurretFramework] Config
 
 @inputs [Base]:entity
 @inputs [MAIN_Gun1 AUX_Gun1 AUX_Gun2 MAIN_Turret1 Designator]:entity # MAIN TURRET 1

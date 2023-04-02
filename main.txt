@@ -1,9 +1,9 @@
-if(Build & !GlobalVariables["Built", number]) {
+@name [TurretFramework] Main
+
+if(Build & !GlobalVariables["Built", number] & !last()) {
     
     GlobalVariables["Built", number] = 1
     buildTurrets()
-}
-
     print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: Building")
     print(_HUD_PRINTCONSOLE, "[TURRET FRAMEWORK]: UnBuilding")
 
