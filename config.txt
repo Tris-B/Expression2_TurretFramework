@@ -44,6 +44,9 @@ if(first() | dupefinished() | duped()) {
 
     #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
     GlobalVariables["TickInterval", number]    = 4
+    
+    #Where to play sounds from
+    GlobalVariables["SoundOrigin", entity]     = Base
     #------------------------------------------------------------------------------------
 
 
@@ -72,7 +75,24 @@ if(first() | dupefinished() | duped()) {
     Keybinds["ZoomSwitch", string]          = ""
     #------------------------------------------------------------------------------------
 
-
+    #SOUNDS
+    #------------------------------------------------------------------------------------
+    #Sounds are triggered when a keybind is used
+    Sounds["AmmoSwitch", string]          = "acf_missiles/fx/bomb_reload.mp3"
+    Sounds["WeaponGroupSwitch", string]   = "buttons/button22.wav"
+    Sounds["BallisticSwitch", string]     = "buttons/button17.wav"
+    Sounds["GunLock", string]             = ""
+    Sounds["CamSwitch", string]           = "buttons/lightswitch2.wav"
+    Sounds["LASE", string]                = "ambient/misc/flour_light.wav"
+    Sounds["FireCoax", string]            = ""
+    Sounds["FireMain", string]            = ""
+    Sounds["TurretGroupSwitch", string]   = ""
+    Sounds["ZoomSwitch", string]          = ""
+    
+    #with great power, comes great responsibility
+    Sounds["ZoomIn", string]              = ""
+    Sounds["ZoomOut", string]             = ""
+    #------------------------------------------------------------------------------------
 
     #Dont touch this unless you want trouble
     #------------------------------------------------------------------------------------
