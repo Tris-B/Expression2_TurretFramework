@@ -48,6 +48,7 @@ if(Pod["Active", number] & !keyClk(Driver)) {
     EGP:egpClkUpdate(Base)
     #EGP:egpUpdateRadarScanlines()
     EGP:egpUpdateConsole(CONSOLE_EVENT)
+    reloadAllEmptyLaunchers()
     
     GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]:setPY_DesignatorAngles(Cam["HitPos",vector])
     GlobalVariables["DistToTarget", number] = GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][1, entity]["GParent", entity]:pos():distance(Cam["HitPos",vector]) #GParent:pos():distance(Cam_HitPos)
