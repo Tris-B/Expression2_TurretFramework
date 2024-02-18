@@ -57,7 +57,7 @@ if(Pod["Active", number] & !keyClk(Driver)) {
         GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][I, entity]:moveTurret(
             Cam["HitPos",vector], 
             solveBallistics(
-                        GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][I, entity]["GChild", entity], 
+                        GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table][GlobalVariables["ActiveWepGroup", number], table]["Primary", array][1, entity],
                         GlobalVariables["DistToTarget", number], 
                         1, 
                         GlobalVariables["BallisticsToggle", number] ), 
