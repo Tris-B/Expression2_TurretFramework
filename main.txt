@@ -14,24 +14,20 @@ interval(500)
 
 if(changed(Pod["Active", number])) {
     
-    runOnKeys(Driver, 0)
-    
-    if(Pod["Active", number]){
+    if(Pod["Active", number]) {
         
-    Driver = Pod["Driver", entity]
-    runOnKeys(Driver, 1)
-    EGP:initEGP()
-    Cam["Activated", number] = 1
-    setActiveAmmoGroup(GlobalVariables["ActiveTurretGroup", number], GlobalVariables["ActiveWepGroup", number], 1)
-    reloadAllEmptyLaunchers()
+        Driver = Pod["Driver", entity]
+        runOnKeys(Driver, 1)
+        EGP:initEGP()
+        Cam["Activated", number] = 1
+        setActiveAmmoGroup(GlobalVariables["ActiveTurretGroup", number], GlobalVariables["ActiveWepGroup", number], 1)
     
-    } else {
+    } elseif (Driver:isValid()) {
     
-    runOnKeys(Driver, 0)
-    #Driver = noentity()
-    Cam["Activated", number] = 0
-    
-    }
+        runOnKeys(Driver, 0)
+        #Driver = noentity()
+        Cam["Activated", number] = 0
+    } else {}
 }
 
 if(keyClk(Driver) & Driver:isValid()) {
