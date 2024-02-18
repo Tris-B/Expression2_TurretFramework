@@ -1,4 +1,5 @@
 @name [TurretFramework] Main
+@persist [GlobalVariables Turrets Keybinds AmmoTable HUDelements Timer State]:table [HUDcolors]:array SC:vector2
 
 if(Build & !GlobalVariables["Built", number] & !last()) {
     
