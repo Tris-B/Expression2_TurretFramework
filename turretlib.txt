@@ -20,7 +20,6 @@
     HUDelements     = table()
     Timer           = table()
     Sounds          = table()
-    Keybinds        = table()
     HUDcolors       = array()
     
     function initTurret(GEntity:entity, TEntity:entity, TBase:entity, TAxis_Offset:vector, GAxis_Offset:vector, AngMax:angle, AngMin:angle, Rate:number, Smoothing:number, TAxis_AngOffset:angle) {
@@ -68,8 +67,13 @@
                                 
                                 #GlobalVariables["TurretCount", number] = TurretCount
                                 GlobalVariables["AllTurrets", array]:pushEntity(TEntity)
-        
-        
+                                
+                                #DEBUG ASSIST HOLOS
+                                
+                                #TURRET FRONT
+                                #holoCreate(HoloCount, TEntity:pos() + TEntity:forward() * (12 * GlobalVariables["DEBUG", number]), vec(GlobalVariables["DEBUG", number]), TEntity:forward():toAngle(), vec(205, 0, 0))
+                                #holoModel(HoloCount, "models/sprops/misc/alphanum/alphanum_arrow_b.mdl")
+                                #HoloCount++
     }
     
     function initTurretGroup(Index:number, Name:string, TGroup:array) {
@@ -452,6 +456,7 @@
                 #break
             
             #case 2,
+            
                 #Vehicle Status-----------------------------------------------------------------------------
                 HUDelements["WepGroupName", number] = N
                 This:egpText(N, "VEHICLE_STATUS:", SC + vec2(250, -90))
