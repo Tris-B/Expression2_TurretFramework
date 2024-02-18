@@ -6,10 +6,6 @@
 @inputs Build 
 @inputs CONSOLE_EVENT:string
 
-@outputs BallisticOffset:vector
-@outputs US 
-#@outputs DNUM:number DVEC:vector DSTRING:string DTABLE:table DARRAY:array DENTITY:entity DANGLE:angle
-
 @persist [Driver]:entity
 
 @trigger Build
