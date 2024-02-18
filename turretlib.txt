@@ -1031,7 +1031,7 @@
                     This["ActiveTurretGroup", number] = This["ActiveTurretGroup", number] - ((This["ActiveTurretGroup", number] == TurretGroupCount + 1) * TurretGroupCount)
                     ActiveTurretGroup = This["TurretGroups", table][This["ActiveTurretGroup", number], table]
                     ActiveWeaponGroup = ActiveTurretGroup["WeaponGroups", table][1, table]
-                    ActiveAmmoGroup = ActiveWeaponGroup["AmmoGroups", table][1, table]
+                    ActiveAmmoGroup = ActiveWeaponGroup["AmmoGroups", table][ActiveWeaponGroup["ActiveAmmoGroup", number], table]
                     
                     Cam:setCamVars(This)
                     #setActiveAmmoGroup(This["ActiveTurretGroup", number], This["ActiveWepGroup", number], ActiveWeaponGroup["ActiveAmmoGroup", number])
@@ -1058,7 +1058,7 @@
                     This["ActiveWepGroup", number] = This["ActiveWepGroup", number] + 1
                     This["ActiveWepGroup", number] = This["ActiveWepGroup", number] - ((This["ActiveWepGroup", number] == WepGroupCount + 1) * WepGroupCount)
                     ActiveWeaponGroup = ActiveTurretGroup["WeaponGroups", table][This["ActiveWepGroup", number], table]
-                    ActiveAmmoGroup = ActiveWeaponGroup["AmmoGroups", table][1, table]
+                    ActiveAmmoGroup = ActiveWeaponGroup["AmmoGroups", table][ActiveWeaponGroup["ActiveAmmoGroup", number], table]
                     #This["MaxAmmoGroup", number] = This["TurretGroups", table][This["ActiveTurretGroup", number], table]["AmmoGroups", table]:count()
                     
                     #setActiveAmmoGroup(This["ActiveTurretGroup", number], This["ActiveWepGroup", number], This["ActiveAmmoGroup", number])
