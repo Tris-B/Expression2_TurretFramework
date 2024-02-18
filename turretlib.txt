@@ -1,6 +1,6 @@
 @name [TurretFramework] Lib
 @inputs [Pod Cam EGP]:wirelink
-@persist [GlobalVariables Turrets Keybinds AmmoTable HUDelements Timer Sounds]:table [HUDcolors]:array
+@persist [GlobalVariables HUDelements Timer Sounds]:table [HUDcolors]:array
     
 #[  
     AUTHOR: Tris
