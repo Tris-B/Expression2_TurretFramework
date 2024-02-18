@@ -29,7 +29,7 @@ if(first() | dupefinished() | duped()) {
     #Because the e2 does 90% of its work on init, intense workloads can trigger tick quota
     #As long as the E2 doesnt crash when refreshed after being fully setup, it shouldnt tick quota at any point after that
     #However, you shouldnt run into any issues unless you are using 10+ turrets
-    
+
     #Dont touch this unless you want trouble
     #------------------------------------------------------------------------------------
     #include "Expression2_TurretFramework/turretlib"
@@ -40,7 +40,7 @@ if(first() | dupefinished() | duped()) {
     #CONFIG
     #------------------------------------------------------------------------------------
     #Set DEBUG to 1 when editing to see things like cam positions and turret axis points
-    GlobalVariables["DEBUG", number]           = 1
+    GlobalVariables["DEBUG", number]           = 0
 
     #By default, the e2 runs every 4 ticks, this seems to be a good compromise between cost and animation quality
     GlobalVariables["TickInterval", number]    = 4
