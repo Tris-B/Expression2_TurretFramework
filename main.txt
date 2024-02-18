@@ -34,7 +34,7 @@ if(changed(Pod["Active", number])) {
     }
 }
 
-if(keyClk(Driver)) {
+if(keyClk(Driver) & Driver:isValid()) {
     
     #DSTRING = keyClkPressed()
     GlobalVariables:keyClk_parsePlayerKeys(Driver, Keybinds)
