@@ -7,7 +7,7 @@
     GITHUB: 
     DSCORD: Tris#7689
     
-    VERSION: v4.5.0 [09/05/2022]
+    VERSION: v4.5.0 [17/02/2024]
     
     REFACTORED FROM: An E2 made by worldpeace/UberDude
     PASTEBIN: https://pastebin.com/QD41qv1K
