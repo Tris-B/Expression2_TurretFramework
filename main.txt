@@ -39,6 +39,9 @@ if(Pod["Active", number] & !keyClk(Driver)) {
     
     interval(GlobalVariables["TickInterval", number])
     
+    if(Cam != nowirelink()) {HitPos = Cam["HitPos", vector]}
+    else {HitPos = Pod["AimPos", vector]}
+    
     US = cpuUsage() * 1000000
     EGP:egpClkUpdate(Base)
     #EGP:egpUpdateRadarScanlines()
@@ -50,7 +53,7 @@ if(Pod["Active", number] & !keyClk(Driver)) {
 
     for(I = 1, GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array]:count()) {
         GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["Turrets", array][I, entity]:moveTurret(
-            Cam["HitPos",vector], 
+            HitPos, 
             solveBallistics(
                         GlobalVariables["TurretGroups", table][GlobalVariables["ActiveTurretGroup", number], table]["WeaponGroups", table][GlobalVariables["ActiveWepGroup", number], table]["Primary", array][1, entity],
                         GlobalVariables["DistToTarget", number], 
