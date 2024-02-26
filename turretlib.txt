@@ -179,9 +179,7 @@
         local Keys = GlobalVariables["AllLaunchers", table]:keys()
         
         for(I = 1, GlobalVariables["AllLaunchers", table]:count()) {
-            if(GlobalVariables["AllLaunchers", table][Keys[I, number], entity]["Wirelink", wirelink]["Shots Left", number] == 0) {
-                GlobalVariables["AllLaunchers", table][Keys[I, number], entity]["Wirelink", wirelink]["Reload", number] = 1
-            }
+            GlobalVariables["AllLaunchers", table][Keys[I, number], entity]["Wirelink", wirelink]["Reload", number] = 1
         }
     }
 
