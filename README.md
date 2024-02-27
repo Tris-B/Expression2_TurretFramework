@@ -2,33 +2,29 @@
 
 ---
 
-## Overview
-
  This guide will provide you with all the knowledge you need to use the full set of features provided by this script. 
 
 This guide will be presented in multiple steps, as shown below.
 
 1. Installation
-2. Inputs
-3. Debug
-4. Keybinds
-5. Functions and their Arguments
-6. Setting up functionality by calling functions
-7. "Building" and "UnBuilding"
+2. Overview
+3. Inputs
+4. Debug
+5. Keybinds
+6. Functions and their Arguments
+7. Calling user functions
+8. "Building" and "UnBuilding"
 
-Instructions for editing libraries bundled with this E2 will not be included, however I can offer advice within reason if you wish to contact me.
+Instructions for editing libraries bundled with this E2 will not be included, however I can offer advice if you wish to contact me.
 
 There is an FAQ and Troubleshooting guide at the end of this. Refer to that for most commonly encountered issues and how to solve them.
 
 ---
 
 ## Installation
-To install the script, download the code in this repository as a zip. Then create a new folder in your garrysmod data folder and call it:
-```.
-Expression2_TurretFramework
-```
+To 'install' the script, download the latest release from this github page, open the zip file and simply drop the *Expression2_TurretFramework* folder inside of your *garrysmod/data/expression2/* folder. 
 
-Then copy the code from inside the zip, into the folder you just created, your file structure should look something like this:
+If you have done everything correctly, your file structure should look something like this:
 
 ```.
 garrysmod/data/expression2/Expression2_TurretFramework/examples/...
@@ -50,7 +46,7 @@ If you cannot validate the E2 inside the in-game editor or spawn it without erro
 
 ### Inputs
 
-To start, open the config.txt in the Expression2 tool, this is the only file which you should have to modify. Like any normal E2, we define the name and our inputs in the first lines.
+To start, open the config.txt script in the Expression2 tool, this is the only file which you should have to modify. Like any normal E2, we define the name and our inputs in the directives section (@name, @inputs etc.).
 
 This E2 requires the following inputs to be provided. Some of these are provided for you.
 
