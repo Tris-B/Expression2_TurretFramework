@@ -24,7 +24,7 @@ There is an FAQ and Troubleshooting guide at the end of this. Refer to that for 
 ## Installation
 To 'install' the script, download the latest release from this github page, open the zip file and simply drop the *Expression2_TurretFramework* folder inside of your *garrysmod/data/expression2/* folder. 
 
-If you have done everything correctly, your file structure should look something like this:
+Your file structure should look something like this:
 
 ```.
 garrysmod/data/expression2/Expression2_TurretFramework/examples/...
