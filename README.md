@@ -38,7 +38,7 @@ garrysmod/data/expression2/Expression2_TurretFramework/config.txt
 
 If you've done everything right, when you open the **config.txt** inside the in-game Expression2 editor, the script should validate and you should be able to spawn the e2 with the tool. 
 
-If you cannot validate the E2 inside the in-game editor or spawn it without erroring, make sure you have the correct file-structure, otherwise the \#include statements inside of config.txt will reference non existant locations/files.
+If you cannot validate the E2 inside the in-game editor or spawn it without erroring, make sure you have the correct file-structure, otherwise the \#include statements inside of config.txt will reference non existent locations/files.
 
 ---
 
