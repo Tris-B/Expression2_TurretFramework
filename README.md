@@ -113,9 +113,9 @@ We can now start looking at keybinds, these should be located below the block of
 
 ```
 
-Not all keybinds are always required, more information is present as comments within the code, above any relevant keybindings.
+Not all keybinds are always required, more information is present as comments within the code.
 
-To edit your keybinds, just edit the strings initialized in this section to whatever you may want. If you are not sure what the correct string is for an obscure key like Delete or End, use the debug tool on the E2, get in a seat
+To edit your keybinds, just edit the strings initialized in this section to whatever you may want.
 
 ---
 
@@ -123,29 +123,7 @@ To edit your keybinds, just edit the strings initialized in this section to what
 
 ---
 
-## Terminology
 
-#### Function
-
- A command which runs predefined code using any ***arguments***(see below for definition) that the user may have provided.
- 
----
-
-#### Arg/Argument
-
-This refers to any data you are passing to a function. 
-
-For example, the function:
-```Lua
-  func(number X, vector Y) { return }
-```
-Has 2 arguments, X and Y, with their respective data types of number and vector.
-
----
-
-#### Var/Variable
-
-This refers to a "thing" that can contain some data
 
 ---
  
