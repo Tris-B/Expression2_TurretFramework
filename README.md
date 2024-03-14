@@ -53,26 +53,38 @@ This E2 requires the following inputs to be provided. Some of these are provided
 Per Vehicle:
 
 - Vehicle Base - entity
-<details>
-<summary>More Info</summary>
-  
-```
-The base prop of your vehicle, this is what will be used to determine orientations, so keep that in mind when going forward.
-```
-</details>
+	<details>
+	<summary>More Info</summary>
 
-
-
+	```
+	The base prop of your vehicle, this is what will be used to determine
+	the forward orientation of your vehicle.
+	Keep that in mind when your turret starts rotating the wrong way or something,
+	ideally you want the base forward vector and turret forward vector to be aligned.
+	There is a turret angle offset you can adjust per turret, this is explained later.
+	```
+	</details>
 - Seat - entity
-<details>
-<summary>More Info</summary>
+	<details>
+	<summary>More Info</summary>
   
-	<pre>
-The seat which will control the turrets.
-</details>
+	```
+	The seat which will control the turrets.
+	```
+	
+	</details>
 
 - Build - number
+<details>
+<summary>More Info</summary>
+<p>
+>	This is used to finalize the vehicle setup, you should set this to 1 when you are happy with the setup and all the debug holos look correct. 
+>	
+>	The easiest method is to wire this to a toggle button and just flick it on when you are satisfied. If you want to change something after you have built, you *MUST* first toggle build off, dupe the whole build and spawn it fresh
 
+</p>
+
+</details>
 
 > The inputs which are required per vehicle are provided for you. 
 
