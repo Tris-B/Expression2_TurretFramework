@@ -52,24 +52,22 @@ This E2 requires the following inputs to be provided. Some of these are provided
 
 Per Vehicle:
 
-- Vehicle Base - entity
-	<details>
-	<summary>More Info</summary>
-		
+- <details><summary>Vehicle Base - entity</summary>
+	
 	>The base prop of your vehicle, this is what will be used to determine the forward orientation of your vehicle.
- 	>
+	>
 	>Keep that in mind when your turret starts rotating the wrong way or something, ideally you want the base forward vector and turret forward vector to be aligned.
- 	>
+	>
 	>There is a turret angle offset you can adjust per turret, this is explained later.
 
-	</details>
+</details>
 - Seat - entity
 	<details>
 	<summary>More Info</summary>
   
-	```
-	The seat which will control the turrets.
-	```
+	>The seat which will control the turrets.
+ 	>
+ 	>The chip will use the inputs from the driver of this seat.
 	
 	</details>
 
