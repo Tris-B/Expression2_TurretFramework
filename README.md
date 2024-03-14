@@ -53,10 +53,26 @@ This E2 requires the following inputs to be provided. Some of these are provided
 Per Vehicle:
 
 - Vehicle Base - entity
+<details>
+<summary>More Info</summary>
+  
+```
 The base prop of your vehicle, this is what will be used to determine orientations, so keep that in mind when going forward.
+```
+</details>
+
+
 
 - Seat - entity
+<details>
+<summary>More Info</summary>
+  
+	<pre>
+The seat which will control the turrets.
+</details>
+
 - Build - number
+
 
 > The inputs which are required per vehicle are provided for you. 
 
