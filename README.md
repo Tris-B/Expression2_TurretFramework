@@ -57,7 +57,7 @@ This E2 requires the following inputs to be provided. Some of these are provided
 
 For more information, click the the 
 
-###### Per Vehicle/Chip:
+##### Per Vehicle/Chip:
 
 - <details><summary>Vehicle Base - entity</summary>
 	
@@ -87,7 +87,7 @@ For more information, click the the
 
 > The inputs which are required per vehicle/chip are provided for you. 
 
-###### Per Turret:
+##### Per Turret:
 
 - <details><summary>Turret Base - entity</summary>
 	
