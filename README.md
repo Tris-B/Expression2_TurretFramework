@@ -59,7 +59,7 @@ This E2 requires the following inputs to be provided. This is listed as inputs r
 
 For more information, click the input names and types listed below to deploy the spoiler.
 
-##### Per Vehicle/Chip:
+#### Per Vehicle/Chip:
 
 The only non-standard input here is ***Build***, it is provided for you and usage is extremely simple. Click the spoiler for some more info.
 
@@ -91,7 +91,7 @@ The only non-standard input here is ***Build***, it is provided for you and usag
 
 > The inputs which are required per vehicle/chip are provided for you. 
 
-##### Per Turret:
+#### Per Turret:
 
 - <details><summary>Turret Base - entity</summary>
 	
@@ -121,7 +121,7 @@ The only non-standard input here is ***Build***, it is provided for you and usag
 
 > The inputs needed for setting up a single turret with 1 primary gun are also provided for you.
 
-##### Per Gun/Weapon Group:
+#### Per Gun/Weapon Group:
 
 A seperate input is required for each ACF gun you wish to control with this chip. It is totally fine to completely bypass the weapon group and ammo group functionality of this script and, for example, simply wire your ACF gun 'Fire' input to your pod controller or even use your own script for controlling this functionality.
 
