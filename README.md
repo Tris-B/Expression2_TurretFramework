@@ -44,13 +44,20 @@ If you cannot validate the E2 inside the in-game editor or spawn it without erro
 
 ## Getting Started
 
+##### Important things to keep in mind
+
+> - Refreshing the chip at any point after ***Build*** has been set to 1 will bug out your entities and likely remove them from existence, *poof*.
+> - To edit anything within the chip **after** you have 'built', you must first set ***Build*** to 0, then dupe and paste your entire contraption. You can now edit any settings and refresh the chip as much as you like. When you are done remember to set ***Build*** to 1 to apply all parents.
+
 ### Inputs
 
 To start, open the config.txt script in the Expression2 tool, this is the only file which you should have to modify. Like any normal E2, we define the name and our inputs in the directives section (@name, @inputs etc.).
 
 This E2 requires the following inputs to be provided. Some of these are provided for you.
 
-Per Vehicle:
+For more information, click the the 
+
+###### Per Vehicle/Chip:
 
 - <details><summary>Vehicle Base - entity</summary>
 	
@@ -78,9 +85,27 @@ Per Vehicle:
 
 </details>
 
-> The inputs which are required per vehicle are provided for you. 
+> The inputs which are required per vehicle/chip are provided for you. 
 
-Per Turret:
+###### Per Turret:
+
+- <details><summary>Turret Base - entity</summary>
+	
+	>	This acts as the turret ring, it will rotate on the axis and plane visible in debug mode.
+	>	
+	>	Depending on your setup, your turret ring props might have 'funky' angles and will require setting an angle offset, this is further explained in the functions and arguments section.
+
+</details>
+
+- <details><summary>Turret Parent - entity</summary>
+	
+	>	This is what your turret will be attached to, in most cases this will be the same as the entity used for your Vehicle Base
+	>	
+	>	You can use any valid entity you like here, even world().
+	>	
+	>	You can attach turrets to other turrets.
+
+</details>
 
 - Turret Base - entity
 This acts as your turret ring
@@ -146,4 +171,3 @@ To edit your keybinds, just edit the strings initialized in this section to what
 
 
 ---
- 
