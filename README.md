@@ -55,14 +55,13 @@ Per Vehicle:
 - Vehicle Base - entity
 	<details>
 	<summary>More Info</summary>
+		
+	>The base prop of your vehicle, this is what will be used to determine the forward orientation of your vehicle.
+ 	>
+	>Keep that in mind when your turret starts rotating the wrong way or something, ideally you want the base forward vector and turret forward vector to be aligned.
+ 	>
+	>There is a turret angle offset you can adjust per turret, this is explained later.
 
-	```
-	The base prop of your vehicle, this is what will be used to determine
-	the forward orientation of your vehicle.
-	Keep that in mind when your turret starts rotating the wrong way or something,
-	ideally you want the base forward vector and turret forward vector to be aligned.
-	There is a turret angle offset you can adjust per turret, this is explained later.
-	```
 	</details>
 - Seat - entity
 	<details>
