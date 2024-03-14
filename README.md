@@ -51,29 +51,33 @@ If you cannot validate the E2 inside the in-game editor or spawn it without erro
 
 ### Inputs
 
-To start, open the config.txt script in the Expression2 tool, this is the only file which you should have to modify. Like any normal E2, we define the name and our inputs in the directives section (@name, @inputs etc.).
+To get started with actual setup, open the config.txt script in the Expression2 tool, this is the only file which you should have to modify. Like any normal E2, we define the name and our inputs in the directives section (@name, @inputs etc.).
 
-This E2 requires the following inputs to be provided. Some of these are provided for you.
+You can set the @name directive of this chip to whatever you like, it has no effect on functionality.
 
-For more information, click the the 
+This E2 requires the following inputs to be provided. This is listed as inputs required per vehicle/chip and per turret and gun. Some of these are provided for you.
+
+For more information, click the input names and types listed below to deploy the spoiler.
 
 ##### Per Vehicle/Chip:
 
+The only non-standard input here is ***Build***, it is provided for you and usage is extremely simple. Click the spoiler for some more info.
+
 - <details><summary>Vehicle Base - entity</summary>
 	
-	>The base prop of your vehicle, this is what will be used to determine the forward orientation of your vehicle.
-	>
-	>Keep that in mind when your turret starts rotating the wrong way or something, ideally you want the base forward vector and turret forward vector to be aligned.
-	>
-	>There is a turret angle offset you can adjust per turret, this is explained later.
+	>	The base prop of your vehicle, this is what will be used to determine the forward orientation of your vehicle.
+	>	
+	>	Keep that in mind when your turret starts rotating the wrong way or something, ideally you want the base forward vector and turret forward vector to be aligned.
+	>	
+	>	There is a turret angle offset you can adjust per turret, this is explained later.
 
 </details>
 
-- <details><summary>Seat - entity</summary>
+- <details><summary>Seat/Pod - entity</summary>
 	
-	>The seat which will control the turrets.
- 	>
- 	>The chip will use the inputs from the driver of this seat.
+	>	The seat which will control the turrets.
+	>	
+	>	The chip will use the inputs from the driver of this seat.
 
 </details>
 
@@ -107,16 +111,41 @@ For more information, click the the
 
 </details>
 
-- Turret Base - entity
-This acts as your turret ring
+- <details><summary>Turret Gun/Pointer - entity</summary>
+	
+	>	This is the prop that will act as your gun, it can be your acf gun entity or if you want to use multiple guns on the same axis, you can make this a prop and parent your guns to it.
+	>	
+	>	When doing this, it is important to orient the pointer prop so that its forward vector is aligned with the guns forward vector. Otherwise your guns aim angle will be offset by the error in orientation (10 degree difference in pitch will make the guns always aim 10 degrees above your aim position, same for yaw)
 
-- Turret Parent - entity
-For most vehicles, this is your Vehicle Base. You can set this to be the base of another turret for example, to have a turret on a turret.
-
-- Turret Gun/Pointer - entity
-This will usually be your gun. However, for turrets with multiple barrels, you can use any entity and just parent your guns to that entity to make them rotate with it.
+</details>
 
 > The inputs needed for setting up a single turret with 1 primary gun are also provided for you.
+
+##### Per Gun/Weapon Group:
+
+A seperate input is required for each ACF gun you wish to control with this chip. It is totally fine to completely bypass the weapon group and ammo group functionality of this script and, for example, simply wire your ACF gun 'Fire' input to your pod controller or even use your own script for controlling this functionality.
+
+- <details><summary>Primary ACF Gun - entity</summary>
+	
+	> This *must* be an acf gun, otherwise the chip will be calling acf function on a non acf entity, and doing more or less nothing.
+	> 
+	> A seperate input is required for every primary gun you wish to have in a given weapon group. 
+	> 
+	> Gun inputs can be reused in multiple weapon groups if you want to have the same gun in multiple weapon groups.
+
+</details>
+
+- <details><summary>Secondary ACF Gun - entity</summary>
+	
+	> This *must* be an acf gun, otherwise the chip will be calling acf function on a non acf entity, and doing more or less nothing.
+	> 
+	> A seperate input is required for every secondary gun you wish to have in a given weapon group. 
+	> 
+	> Gun inputs can be reused in multiple weapon groups if you want to have the same gun in multiple weapon groups.
+	> 
+	> IMPORTANT: Secondary guns are not affected by ammo group settings and switching, they will load from all attached crates.
+
+</details>
 
 ---
 
