@@ -61,25 +61,20 @@ Per Vehicle:
 	>There is a turret angle offset you can adjust per turret, this is explained later.
 
 </details>
-- Seat - entity
-	<details>
-	<summary>More Info</summary>
-  
+
+- <details><summary>Seat - entity</summary>
+	
 	>The seat which will control the turrets.
  	>
  	>The chip will use the inputs from the driver of this seat.
+
+</details>
+
+- <details><summary>Build - number</summary>
 	
-	</details>
-
-- Build - number
-<details>
-<summary>More Info</summary>
-<p>
->	This is used to finalize the vehicle setup, you should set this to 1 when you are happy with the setup and all the debug holos look correct. 
->	
->	The easiest method is to wire this to a toggle button and just flick it on when you are satisfied. If you want to change something after you have built, you *MUST* first toggle build off, dupe the whole build and spawn it fresh
-
-</p>
+	>	This is used to finalize the vehicle setup, you should set this to 1 when you are happy with the setup and all the debug holos look correct. 
+	>	
+	>	The easiest method is to wire this to a toggle button and just flick it on when you are satisfied. If you want to change something after you have built, you *MUST* first toggle build off, dupe the whole build and spawn it fresh
 
 </details>
 
