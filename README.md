@@ -180,9 +180,9 @@ We can now start looking at keybinds, these should be located below the block of
 	#KEYBINDS
 	#---------------------------------------------------------------------------
 	Keybinds["AmmoSwitch", string]          = "1"
-    Keybinds["WeaponGroupSwitch", string]   = "2"
-    Keybinds["BallisticSwitch", string]     = "3"
-    ...
+    	Keybinds["WeaponGroupSwitch", string]   = "2"
+    	Keybinds["BallisticSwitch", string]     = "3"
+    	...
 	#---------------------------------------------------------------------------
 
 ```
