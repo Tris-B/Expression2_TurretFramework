@@ -2,18 +2,34 @@
 
 ---
 
+## Overview
+
+An all-in-one turret controller script written in expression2, designed to work with the ACF3 addon.
+
+##### Features:
+- Configurable Keybinding.
+- Configurable sounds triggered on keybind usage.
+- Possibility of various turret setups for all sorts of vehicles, multiple turrets, turrets on turrets, go wild.
+- Configurable turret groups, turrets can be assigned to groups which you can swap between.
+- Configurable weapon groups, for those vehicles that have a silly amount of guns.
+- Configurable ammo groups for each weapon group.
+- Fancy EGP HUD included.
+
+---
+
  This guide will provide you with all the knowledge you need to use the full set of features provided by this script. 
 
 This guide will be presented in multiple steps, as shown below.
 
-1. Installation
-2. Overview
-3. Inputs
-4. Debug
-5. Keybinds
-6. Functions and their Arguments
-7. Calling user functions
-8. "Building" and "UnBuilding"
+1. [Installation](#installation)
+2. [The Basics](#the-basics)
+3. [Inputs](#inputs)
+4. [Keybinds](#keybinds)
+5. [Functions and Arguments](#Functions-and-Arguments)
+6. [Using the Debug functionality](#using-the-debug-functionality)
+7. [Calling user functions](#calling-user-functions)
+8. ["Building" and "UnBuilding"](#building-and-unbuilding)
+9. [Troubleshooting](#troubleshooting)
 
 Instructions for editing libraries bundled with this E2 will not be included, however I can offer advice if you wish to contact me.
 
@@ -44,16 +60,20 @@ If you cannot validate the E2 inside the in-game editor or spawn it without erro
 
 ## Getting Started
 
+To get started with actual setup, open the config.txt script in the Expression2 tool, this is the only file which you should have to modify. 
+
+You can set the @name directive of this chip to whatever you like, it has no effect on functionality.
+
 ##### Important things to keep in mind
 
 > - Refreshing the chip at any point after ***Build*** has been set to 1 will bug out your entities and likely remove them from existence, *poof*.
 > - To edit anything within the chip **after** you have 'built', you must first set ***Build*** to 0, then dupe and paste your entire contraption. You can now edit any settings and refresh the chip as much as you like. When you are done remember to set ***Build*** to 1 to apply all parents.
 
+---
+
 ### Inputs
 
-To get started with actual setup, open the config.txt script in the Expression2 tool, this is the only file which you should have to modify. Like any normal E2, we define the name and our inputs in the directives section (@name, @inputs etc.).
-
-You can set the @name directive of this chip to whatever you like, it has no effect on functionality.
+Like any normal E2 chip, we define our inputs in the directives section (@name, @inputs etc.) at the top of the file.
 
 This E2 requires the following inputs to be provided. This is listed as inputs required per vehicle/chip and per turret and gun. Some of these are provided for you.
 
@@ -85,7 +105,7 @@ The only non-standard input here is ***Build***, it is provided for you and usag
 	
 	>	This is used to finalize the vehicle setup, you should set this to 1 when you are happy with the setup and all the debug holos look correct. 
 	>	
-	>	The easiest method is to wire this to a toggle button and just flick it on when you are satisfied. If you want to change something after you have built, you *MUST* first toggle build off, dupe the whole build and spawn it fresh
+	>	The easiest method is to wire this to a toggle button and just flick it on when you are satisfied. If you want to change something after you have built, you *MUST* first toggle build off, dupe the whole build and spawn it fresh.
 
 </details>
 
@@ -127,23 +147,23 @@ A seperate input is required for each ACF gun you wish to control with this chip
 
 - <details><summary>Primary ACF Gun - entity</summary>
 	
-	> This *must* be an acf gun, otherwise the chip will be calling acf function on a non acf entity, and doing more or less nothing.
-	> 
-	> A seperate input is required for every primary gun you wish to have in a given weapon group. 
-	> 
-	> Gun inputs can be reused in multiple weapon groups if you want to have the same gun in multiple weapon groups.
+	>	This *must* be an acf gun, otherwise the chip will be calling acf function on a non acf entity, and doing more or less nothing.
+	>	
+	>	A seperate input is required for every primary gun you wish to have in a given weapon group. 
+	>	
+	>	Gun inputs can be reused in multiple weapon groups if you want to have the same gun in multiple weapon groups.
 
 </details>
 
 - <details><summary>Secondary ACF Gun - entity</summary>
 	
-	> This *must* be an acf gun, otherwise the chip will be calling acf function on a non acf entity, and doing more or less nothing.
-	> 
-	> A seperate input is required for every secondary gun you wish to have in a given weapon group. 
-	> 
-	> Gun inputs can be reused in multiple weapon groups if you want to have the same gun in multiple weapon groups.
-	> 
-	> IMPORTANT: Secondary guns are not affected by ammo group settings and switching, they will load from all attached crates.
+	>	This *must* be an acf gun, otherwise the chip will be calling acf function on a non acf entity, and doing more or less nothing.
+	>	
+	>	A seperate input is required for every secondary gun you wish to have in a given weapon group. 
+	>	
+	>	Gun inputs can be reused in multiple weapon groups if you want to have the same gun in multiple weapon groups.
+	>	
+	>	IMPORTANT: Secondary guns are not affected by ammo group settings and switching, they will load from all attached crates.
 
 </details>
 
@@ -165,6 +185,8 @@ Now that you know all about inputs, navigate to line ~44, depending on how you h
 The first statement determines if the E2 is in debugging mode, when in debugging mode, things like turret/gun axis are shown, more information on debugging mode is provided under the Debug Mode header.
 
 >When you are done setting up your vehicle, set DEBUG to 0 to not draw the debug holos.
+>
+>Make sure you do this **before** setting ***Build*** to 1.
 
 The second statement determines how quickly the E2 runs, lower is faster, higher is slower. This value has no impact on turret rotation speeds or responsiveness to keybinds, it will only negatively impact the smoothness of turret movement.
 
@@ -172,7 +194,7 @@ The second statement determines how quickly the E2 runs, lower is faster, higher
 
 ---
 
-### Keybinding
+### Keybinds
 
 We can now start looking at keybinds, these should be located below the block of code we edited in the previous section, around line ~60, with the code looking as follows:
 
@@ -180,9 +202,9 @@ We can now start looking at keybinds, these should be located below the block of
 	#KEYBINDS
 	#---------------------------------------------------------------------------
 	Keybinds["AmmoSwitch", string]          = "1"
-    	Keybinds["WeaponGroupSwitch", string]   = "2"
-    	Keybinds["BallisticSwitch", string]     = "3"
-    	...
+	Keybinds["WeaponGroupSwitch", string]   = "2"
+	Keybinds["BallisticSwitch", string]     = "3"
+	...
 	#---------------------------------------------------------------------------
 
 ```
