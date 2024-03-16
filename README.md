@@ -71,7 +71,32 @@ You can set the @name directive of this chip to whatever you like, it has no eff
 
 ---
 
-### Inputs
+## The Basics
+
+After opening config.txt in your expression 2 editor, navigate to line ~44. The code you are looking for looks like this:
+
+```Lua
+    #CONFIG
+    #---------------------------------------------------------------------------
+    GlobalVariables["DEBUG", number]           = 1
+
+    GlobalVariables["TickInterval", number]    = 4
+    #---------------------------------------------------------------------------
+```
+
+The first statement determines if the E2 is in debugging mode, when in debugging mode, things like turret/gun axis are shown, more information on debugging mode is provided under the [Debug functionality header](#using-the-debug-functionality).
+
+>When you are done setting up your vehicle, set DEBUG to 0 to not draw the debug holos.
+>
+>Make sure you do this **before** setting ***Build*** to 1.
+
+The second statement determines how quickly the E2 runs, lower is faster, higher is slower. This value has no impact on turret rotation speeds or responsiveness to keybinds, it will only negatively impact the smoothness of turret movement.
+
+>When using this E2 with high intervals, it is advised to increase the turret "smoothing". This can help counteract some of the consequences of using a high interval.
+
+---
+
+## Inputs
 
 Like any normal E2 chip, we define our inputs in the directives section (@name, @inputs etc.) at the top of the file.
 
@@ -169,32 +194,7 @@ A seperate input is required for each ACF gun you wish to control with this chip
 
 ---
 
-### The Basics
-
-Now that you know all about inputs, navigate to line ~44, depending on how you have setup your inputs, the code may be on a slightly different lines. The code you are looking for looks like this:
-
-```Lua
-    #CONFIG
-    #---------------------------------------------------------------------------
-    GlobalVariables["DEBUG", number]           = 1
-
-    GlobalVariables["TickInterval", number]    = 4
-    #---------------------------------------------------------------------------
-```
-
-The first statement determines if the E2 is in debugging mode, when in debugging mode, things like turret/gun axis are shown, more information on debugging mode is provided under the Debug Mode header.
-
->When you are done setting up your vehicle, set DEBUG to 0 to not draw the debug holos.
->
->Make sure you do this **before** setting ***Build*** to 1.
-
-The second statement determines how quickly the E2 runs, lower is faster, higher is slower. This value has no impact on turret rotation speeds or responsiveness to keybinds, it will only negatively impact the smoothness of turret movement.
-
->When using this E2 with high intervals, it is advised to increase the turret "smoothing". This can help counteract some of the consequences of using a high interval.
-
----
-
-### Keybinds
+## Keybinds
 
 We can now start looking at keybinds, these should be located below the block of code we edited in the previous section, around line ~60, with the code looking as follows:
 
@@ -215,10 +215,22 @@ To edit your keybinds, just edit the strings initialized in this section to what
 
 ---
 
-### Troubleshooting
+## Functions and Arguments
 
 ---
 
+## Using the Debug functionality
 
+---
+
+## Calling user functions
+
+---
+
+## "Building" and "UnBuilding"
+
+---
+
+## Troubleshooting
 
 ---
