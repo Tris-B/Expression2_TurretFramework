@@ -24,7 +24,7 @@ This guide will be presented in multiple steps, as shown below.
 1. [Installation](#installation)
 2. [The Basics](#the-basics)
 3. [Inputs](#inputs)
-4. [Keybinds](#keybinds)
+4. [Keybinds and Sounds](#keybinds-and-sounds)
 5. [Functions and Arguments](#Functions-and-Arguments)
 6. [Using the Debug functionality](#using-the-debug-functionality)
 7. [Calling user functions](#calling-user-functions)
@@ -194,9 +194,13 @@ A seperate input is required for each ACF gun you wish to control with this chip
 
 ---
 
-## Keybinds
+## Keybinds and Sounds
 
-We can now start looking at keybinds, these should be located below the block of code we edited in the previous section, around line ~60, with the code looking as follows:
+We can now start looking at configuring keybinds and sounds, these should be located below the block of code we edited in [The Basics](#the-basics) section.
+
+#### Keybinds
+
+To edit your keybinds, go to line ~60, the code should look something like this:
 
 ```Lua
 	#KEYBINDS
@@ -209,17 +213,34 @@ We can now start looking at keybinds, these should be located below the block of
 
 ```
 
-Not all keybinds are always required, more information is present as comments within the code.
+Just change the strings initialized in this section to whatever you may want.
 
-To edit your keybinds, just edit the strings initialized in this section to whatever you may want.
+Not all keybinds are always required, for example when using a single turret there is no need to bind the turret switch, so you can leave it as an empty string "". More information is present as comments within the code.
+
+>  It's important to note that due to the way expression 2 handles inputs, using the scroll wheel as a keybind can cause the chip's cpu usage to temporarily spike.
+
+#### Sounds
+
+To edit the sounds, go to line ~80, the code should look like this:
+
+```Lua
+    #SOUNDS
+	#---------------------------------------------------------------------------
+    Sounds["AmmoSwitch", string]          = "acf_missiles/fx/bomb_reload.mp3"
+    Sounds["WeaponGroupSwitch", string]   = "buttons/button22.wav"
+    ...
+    #---------------------------------------------------------------------------
+
+```
+
+
 
 ---
 
 ## Functions and Arguments
+This section shows a brief description of each function and what its arguments are used for internally, these functions are used for configuring all turret, weapon, ammo and camera behaviour. More information on how to use these functions to achieve the intended setup is available in the [Calling user functions](#calling-user-functions) section. 
 
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+###### 
 
 ---
 
